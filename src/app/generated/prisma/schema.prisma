@@ -1,0 +1,187 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/app/generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  STAFF
+  ADMIN
+}
+
+enum DepartmentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RoomStatus {
+  AVAILABLE
+  FULL
+  MAINTENANCE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum PatientStatus {
+  ADMITTED
+  DISCHARGED
+}
+
+enum MedicineType {
+  PILL
+  INJECTION
+  LIQUID
+  POWDER
+  CREAM
+  PATCH
+  DROPS
+  OTHER
+}
+
+enum BoxStatus {
+  ACTIVE
+  RETURNED
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum AdministrationStatus {
+  GIVEN
+  SKIPPED
+  DELAYED
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  passwordHash       String
+  role               UserRole
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  administrationLogs AdministrationLog[] @relation("StaffAdministrationLogs")
+}
+
+model Department {
+  id          String           @id @default(cuid())
+  name        String
+  description String
+  head        String
+  status      DepartmentStatus
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  rooms       Room[]
+  patients    Patient[]
+}
+
+model Room {
+  id           String     @id @default(cuid())
+  roomNumber   String
+  capacity     Int
+  status       RoomStatus
+  departmentId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  department   Department @relation(fields: [departmentId], references: [id])
+}
+
+model Patient {
+  id                  String               @id @default(cuid())
+  name                String
+  age                 Int
+  gender              Gender
+  nationalId          String               @unique
+  departmentId        String?
+  room                String?
+  allergies           String[]
+  status              PatientStatus
+  notes               String?
+  boxId               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  department          Department?          @relation(fields: [departmentId], references: [id])
+  box                 Box?                 @relation(fields: [boxId], references: [id])
+  medicineAssignments MedicineAssignment[]
+  administrationLogs  AdministrationLog[]
+}
+
+model Medicine {
+  id                   String               @id @default(cuid())
+  name                 String
+  type                 MedicineType
+  administrationMethod String?
+  defaultDosage        String?
+  notes                String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  medicineAssignments  MedicineAssignment[]
+}
+
+model Box {
+  id                  String               @id @default(cuid())
+  boxLabel            String               @unique
+  location            String?
+  status              BoxStatus
+  notes               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  patients            Patient[]
+  medicineAssignments MedicineAssignment[]
+}
+
+model MedicineAssignment {
+  id                           String              @id @default(cuid())
+  patientId                    String
+  boxId                        String?
+  medicineId                   String
+  dosage                       String
+  administrationMethodOverride String?
+  scheduleTimes                String[]
+  startDate                    DateTime
+  durationDays                 Int
+  endDate                      DateTime
+  repeat                       Boolean
+  status                       AssignmentStatus
+  notes                        String?
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @updatedAt
+  patient                      Patient             @relation(fields: [patientId], references: [id])
+  box                          Box?                @relation(fields: [boxId], references: [id])
+  medicine                     Medicine            @relation(fields: [medicineId], references: [id])
+  administrationLogs           AdministrationLog[]
+}
+
+model AdministrationLog {
+  id             String               @id @default(cuid())
+  assignmentId   String
+  patientId      String
+  staffId        String
+  scheduledTime  DateTime
+  administeredAt DateTime?
+  status         AdministrationStatus
+  skipReason     String?
+  notes          String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  assignment     MedicineAssignment   @relation(fields: [assignmentId], references: [id])
+  patient        Patient              @relation(fields: [patientId], references: [id])
+  staff          User                 @relation("StaffAdministrationLogs", fields: [staffId], references: [id])
+}
