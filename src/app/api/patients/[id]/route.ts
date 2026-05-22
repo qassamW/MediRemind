@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/guards'
-import { PatientStatus, Gender } from '@/app/generated/prisma'
+import { PatientStatus, Gender, AssignmentStatus } from '@/app/generated/prisma'
 
 const patientDetail = {
   department: true,
@@ -43,7 +43,8 @@ export async function PUT(
     const { id } = await params
 
     const body = await request.json()
-    const { name, age, gender, nationalId, departmentId, room, allergies, notes, status } = body
+    const { name, age, gender, nationalId, departmentId, room, allergies, notes, status,
+            boxId, boxStartDate, boxDurationDays, boxScheduleTimes, boxRepeat } = body
 
     const data: Record<string, unknown> = {}
     if (name !== undefined) data.name = name
@@ -55,12 +56,81 @@ export async function PUT(
     if (allergies !== undefined) data.allergies = allergies
     if (notes !== undefined) data.notes = notes
     if (status !== undefined) data.status = status as PatientStatus
+    // Fetch current patient state before updating (needed for box logic)
+    const existing = boxId !== undefined
+      ? await prisma.patient.findUnique({ where: { id }, select: { boxId: true } })
+      : null
+
+    let start: Date | undefined
+    let end: Date | undefined
+
+    if (boxId !== undefined) {
+      data.boxId = boxId ?? null
+      if (boxId === null) {
+        data.boxStartDate = null
+        data.boxEndDate = null
+        data.boxDurationDays = null
+      }
+    }
+    if (boxStartDate !== undefined && boxDurationDays !== undefined && boxId) {
+      start = new Date(boxStartDate)
+      end = new Date(start)
+      end.setDate(end.getDate() + Number(boxDurationDays))
+      data.boxStartDate = start
+      data.boxEndDate = end
+      data.boxDurationDays = Number(boxDurationDays)
+    }
 
     const patient = await prisma.patient.update({
       where: { id },
       data,
       include: patientDetail,
     })
+
+    // ── Box assignment side effects ───────────────────────────────────────────
+
+    // Removing box → cancel its assignments for this patient
+    if (boxId === null && existing?.boxId) {
+      await prisma.medicineAssignment.updateMany({
+        where: { patientId: id, boxId: existing.boxId, status: AssignmentStatus.ACTIVE },
+        data: { status: AssignmentStatus.CANCELLED },
+      })
+    }
+
+    // Assigning a new box → cancel old box assignments + create from contents
+    if (boxId && boxId !== existing?.boxId && start && end) {
+      // Cancel assignments from previous box if switching
+      if (existing?.boxId) {
+        await prisma.medicineAssignment.updateMany({
+          where: { patientId: id, boxId: existing.boxId, status: AssignmentStatus.ACTIVE },
+          data: { status: AssignmentStatus.CANCELLED },
+        })
+      }
+
+      const box = await prisma.box.findUnique({
+        where: { id: boxId },
+        include: { contents: true },
+      })
+
+      if (box && box.contents.length > 0) {
+        await prisma.medicineAssignment.createMany({
+          data: box.contents.map(c => ({
+            patientId: id,
+            medicineId: c.medicineId,
+            boxId: boxId,
+            dosage: c.dosage ?? '',
+            administrationMethodOverride: c.administrationMethod ?? null,
+            scheduleTimes: boxScheduleTimes ?? [],
+            startDate: start!,
+            endDate: end!,
+            durationDays: Number(boxDurationDays),
+            repeat: Boolean(boxRepeat),
+            status: AssignmentStatus.ACTIVE,
+            notes: c.notes ?? null,
+          })),
+        })
+      }
+    }
 
     return Response.json(patient)
   } catch (err) {

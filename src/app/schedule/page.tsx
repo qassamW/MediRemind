@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import DoseRow from '@/components/DoseRow'
+import DoseRow, { GroupedDoseRow } from '@/components/DoseRow'
 import type { ScheduleItem, ScheduleItemStatus } from '@/types'
 
 type Department = { id: string; name: string }
@@ -30,6 +30,20 @@ function groupByTime(items: ScheduleItem[]): [string, ScheduleItem[]][] {
 const rowPriority = (s: ScheduleItemStatus) =>
   s === 'overdue' ? 0 : s === 'pending' ? 1 : 2
 
+// Group box medicines for the same patient+box into one display unit
+function mergeBoxRows(items: ScheduleItem[]): (ScheduleItem | ScheduleItem[])[] {
+  const groups = new Map<string, ScheduleItem[]>()
+  for (const item of items) {
+    const key = item.boxLabel
+      ? `${item.patientId}::${item.boxLabel}`
+      : `solo::${item.assignmentId}`
+    const arr = groups.get(key) ?? []
+    arr.push(item)
+    groups.set(key, arr)
+  }
+  return [...groups.values()].map(g => (g.length === 1 ? g[0] : g))
+}
+
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-GB', {
     weekday: 'long',
@@ -44,6 +58,7 @@ export default function SchedulePage() {
   const [items, setItems] = useState<ScheduleItem[]>([])
   const [loading, setLoading] = useState(true)
   const [departments, setDepartments] = useState<Department[]>([])
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10))
   const [departmentFilter, setDepartmentFilter] = useState('')
   const [patientSearch, setPatientSearch] = useState('')
   const [secondsAgo, setSecondsAgo] = useState(0)
@@ -61,6 +76,7 @@ export default function SchedulePage() {
   const fetchSchedule = useCallback(async () => {
     try {
       const url = new URL('/api/schedule', window.location.origin)
+      url.searchParams.set('date', selectedDate)
       if (departmentFilter) url.searchParams.set('departmentId', departmentFilter)
       const res = await fetch(url.toString())
       if (res.ok) {
@@ -74,7 +90,7 @@ export default function SchedulePage() {
     } finally {
       setLoading(false)
     }
-  }, [departmentFilter])
+  }, [selectedDate, departmentFilter])
 
   useEffect(() => {
     setLoading(true)
@@ -117,8 +133,10 @@ export default function SchedulePage() {
       {/* ── Header ── */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Today&apos;s Schedule</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{formatDate(new Date())}</p>
+          <h1 className="text-xl font-semibold text-gray-900">
+            {selectedDate === new Date().toISOString().slice(0, 10) ? "Today's Schedule" : 'Schedule'}
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">{formatDate(new Date(selectedDate + 'T12:00:00'))}</p>
         </div>
 
         <div className="flex items-center gap-4">
@@ -162,6 +180,12 @@ export default function SchedulePage() {
 
       {/* ── Filter bar ── */}
       <div className="flex items-center gap-3 mb-5">
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={e => setSelectedDate(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <select
           value={departmentFilter}
           onChange={e => setDepartmentFilter(e.target.value)}
@@ -262,14 +286,22 @@ export default function SchedulePage() {
                   )}
                 </div>
 
-                {/* Dose rows */}
-                {sortedRows.map(item => (
-                  <DoseRow
-                    key={`${item.assignmentId}-${item.scheduledTime}`}
-                    item={item}
-                    onUpdate={updateItem}
-                  />
-                ))}
+                {/* Dose rows — box medicines for same patient merged into one row */}
+                {mergeBoxRows(sortedRows).map((itemOrGroup, idx) =>
+                  Array.isArray(itemOrGroup) ? (
+                    <GroupedDoseRow
+                      key={`group-${itemOrGroup[0].patientId}-${itemOrGroup[0].boxLabel}-${idx}`}
+                      items={itemOrGroup}
+                      onUpdate={updateItem}
+                    />
+                  ) : (
+                    <DoseRow
+                      key={`${itemOrGroup.assignmentId}-${itemOrGroup.scheduledTime}`}
+                      item={itemOrGroup}
+                      onUpdate={updateItem}
+                    />
+                  )
+                )}
               </div>
             )
           })}

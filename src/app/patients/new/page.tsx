@@ -180,7 +180,6 @@ export default function NewPatientPage() {
                 <option value="">Select gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
               </select>
               {errors.gender && <p className="mt-1 text-xs text-red-600">{errors.gender}</p>}
             </div>

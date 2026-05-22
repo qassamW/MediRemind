@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
       include: {
         medicine: { select: { name: true, administrationMethod: true } },
         patient: { select: { id: true, name: true, room: true } },
+        box: { select: { boxLabel: true } },
       },
     })
 
@@ -82,6 +83,7 @@ export async function GET(request: NextRequest) {
           status,
           logId: log?.id ?? null,
           skipReason: log?.skipReason ?? null,
+          boxLabel: assignment.box?.boxLabel ?? null,
         })
       }
     }

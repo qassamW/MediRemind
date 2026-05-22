@@ -5,10 +5,8 @@ import { BoxStatus } from '@/app/generated/prisma'
 
 const boxInclude = {
   patients: { select: { id: true, name: true } },
-  medicineAssignments: {
-    include: {
-      medicine: { select: { id: true, name: true, type: true } },
-    },
+  contents: {
+    include: { medicine: { select: { id: true, name: true, type: true } } },
     orderBy: { createdAt: 'asc' as const },
   },
 } as const

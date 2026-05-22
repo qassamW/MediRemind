@@ -44,6 +44,11 @@ export type Medicine = $Result.DefaultSelection<Prisma.$MedicinePayload>
  */
 export type Box = $Result.DefaultSelection<Prisma.$BoxPayload>
 /**
+ * Model BoxContent
+ * 
+ */
+export type BoxContent = $Result.DefaultSelection<Prisma.$BoxContentPayload>
+/**
  * Model MedicineAssignment
  * 
  */
@@ -358,6 +363,16 @@ export class PrismaClient<
     * ```
     */
   get box(): Prisma.BoxDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.boxContent`: Exposes CRUD operations for the **BoxContent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BoxContents
+    * const boxContents = await prisma.boxContent.findMany()
+    * ```
+    */
+  get boxContent(): Prisma.BoxContentDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.medicineAssignment`: Exposes CRUD operations for the **MedicineAssignment** model.
@@ -818,6 +833,7 @@ export namespace Prisma {
     Patient: 'Patient',
     Medicine: 'Medicine',
     Box: 'Box',
+    BoxContent: 'BoxContent',
     MedicineAssignment: 'MedicineAssignment',
     AdministrationLog: 'AdministrationLog'
   };
@@ -835,7 +851,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "department" | "room" | "patient" | "medicine" | "box" | "medicineAssignment" | "administrationLog"
+      modelProps: "user" | "department" | "room" | "patient" | "medicine" | "box" | "boxContent" | "medicineAssignment" | "administrationLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1283,6 +1299,80 @@ export namespace Prisma {
           }
         }
       }
+      BoxContent: {
+        payload: Prisma.$BoxContentPayload<ExtArgs>
+        fields: Prisma.BoxContentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BoxContentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BoxContentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>
+          }
+          findFirst: {
+            args: Prisma.BoxContentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BoxContentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>
+          }
+          findMany: {
+            args: Prisma.BoxContentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>[]
+          }
+          create: {
+            args: Prisma.BoxContentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>
+          }
+          createMany: {
+            args: Prisma.BoxContentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BoxContentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>[]
+          }
+          delete: {
+            args: Prisma.BoxContentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>
+          }
+          update: {
+            args: Prisma.BoxContentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>
+          }
+          deleteMany: {
+            args: Prisma.BoxContentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BoxContentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BoxContentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>[]
+          }
+          upsert: {
+            args: Prisma.BoxContentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BoxContentPayload>
+          }
+          aggregate: {
+            args: Prisma.BoxContentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBoxContent>
+          }
+          groupBy: {
+            args: Prisma.BoxContentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BoxContentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BoxContentCountArgs<ExtArgs>
+            result: $Utils.Optional<BoxContentCountAggregateOutputType> | number
+          }
+        }
+      }
       MedicineAssignment: {
         payload: Prisma.$MedicineAssignmentPayload<ExtArgs>
         fields: Prisma.MedicineAssignmentFieldRefs
@@ -1545,6 +1635,7 @@ export namespace Prisma {
     patient?: PatientOmit
     medicine?: MedicineOmit
     box?: BoxOmit
+    boxContent?: BoxContentOmit
     medicineAssignment?: MedicineAssignmentOmit
     administrationLog?: AdministrationLogOmit
   }
@@ -1739,10 +1830,12 @@ export namespace Prisma {
 
   export type MedicineCountOutputType = {
     medicineAssignments: number
+    boxContents: number
   }
 
   export type MedicineCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     medicineAssignments?: boolean | MedicineCountOutputTypeCountMedicineAssignmentsArgs
+    boxContents?: boolean | MedicineCountOutputTypeCountBoxContentsArgs
   }
 
   // Custom InputTypes
@@ -1763,6 +1856,13 @@ export namespace Prisma {
     where?: MedicineAssignmentWhereInput
   }
 
+  /**
+   * MedicineCountOutputType without action
+   */
+  export type MedicineCountOutputTypeCountBoxContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoxContentWhereInput
+  }
+
 
   /**
    * Count Type BoxCountOutputType
@@ -1771,11 +1871,13 @@ export namespace Prisma {
   export type BoxCountOutputType = {
     patients: number
     medicineAssignments: number
+    contents: number
   }
 
   export type BoxCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     patients?: boolean | BoxCountOutputTypeCountPatientsArgs
     medicineAssignments?: boolean | BoxCountOutputTypeCountMedicineAssignmentsArgs
+    contents?: boolean | BoxCountOutputTypeCountContentsArgs
   }
 
   // Custom InputTypes
@@ -1801,6 +1903,13 @@ export namespace Prisma {
    */
   export type BoxCountOutputTypeCountMedicineAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MedicineAssignmentWhereInput
+  }
+
+  /**
+   * BoxCountOutputType without action
+   */
+  export type BoxCountOutputTypeCountContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoxContentWhereInput
   }
 
 
@@ -5206,10 +5315,12 @@ export namespace Prisma {
 
   export type PatientAvgAggregateOutputType = {
     age: number | null
+    boxDurationDays: number | null
   }
 
   export type PatientSumAggregateOutputType = {
     age: number | null
+    boxDurationDays: number | null
   }
 
   export type PatientMinAggregateOutputType = {
@@ -5223,6 +5334,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus | null
     notes: string | null
     boxId: string | null
+    boxStartDate: Date | null
+    boxEndDate: Date | null
+    boxDurationDays: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5238,6 +5352,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus | null
     notes: string | null
     boxId: string | null
+    boxStartDate: Date | null
+    boxEndDate: Date | null
+    boxDurationDays: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5254,6 +5371,9 @@ export namespace Prisma {
     status: number
     notes: number
     boxId: number
+    boxStartDate: number
+    boxEndDate: number
+    boxDurationDays: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5262,10 +5382,12 @@ export namespace Prisma {
 
   export type PatientAvgAggregateInputType = {
     age?: true
+    boxDurationDays?: true
   }
 
   export type PatientSumAggregateInputType = {
     age?: true
+    boxDurationDays?: true
   }
 
   export type PatientMinAggregateInputType = {
@@ -5279,6 +5401,9 @@ export namespace Prisma {
     status?: true
     notes?: true
     boxId?: true
+    boxStartDate?: true
+    boxEndDate?: true
+    boxDurationDays?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5294,6 +5419,9 @@ export namespace Prisma {
     status?: true
     notes?: true
     boxId?: true
+    boxStartDate?: true
+    boxEndDate?: true
+    boxDurationDays?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5310,6 +5438,9 @@ export namespace Prisma {
     status?: true
     notes?: true
     boxId?: true
+    boxStartDate?: true
+    boxEndDate?: true
+    boxDurationDays?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5413,6 +5544,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes: string | null
     boxId: string | null
+    boxStartDate: Date | null
+    boxEndDate: Date | null
+    boxDurationDays: number | null
     createdAt: Date
     updatedAt: Date
     _count: PatientCountAggregateOutputType | null
@@ -5448,6 +5582,9 @@ export namespace Prisma {
     status?: boolean
     notes?: boolean
     boxId?: boolean
+    boxStartDate?: boolean
+    boxEndDate?: boolean
+    boxDurationDays?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     department?: boolean | Patient$departmentArgs<ExtArgs>
@@ -5469,6 +5606,9 @@ export namespace Prisma {
     status?: boolean
     notes?: boolean
     boxId?: boolean
+    boxStartDate?: boolean
+    boxEndDate?: boolean
+    boxDurationDays?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     department?: boolean | Patient$departmentArgs<ExtArgs>
@@ -5487,6 +5627,9 @@ export namespace Prisma {
     status?: boolean
     notes?: boolean
     boxId?: boolean
+    boxStartDate?: boolean
+    boxEndDate?: boolean
+    boxDurationDays?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     department?: boolean | Patient$departmentArgs<ExtArgs>
@@ -5505,11 +5648,14 @@ export namespace Prisma {
     status?: boolean
     notes?: boolean
     boxId?: boolean
+    boxStartDate?: boolean
+    boxEndDate?: boolean
+    boxDurationDays?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PatientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "age" | "gender" | "nationalId" | "departmentId" | "room" | "allergies" | "status" | "notes" | "boxId" | "createdAt" | "updatedAt", ExtArgs["result"]["patient"]>
+  export type PatientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "age" | "gender" | "nationalId" | "departmentId" | "room" | "allergies" | "status" | "notes" | "boxId" | "boxStartDate" | "boxEndDate" | "boxDurationDays" | "createdAt" | "updatedAt", ExtArgs["result"]["patient"]>
   export type PatientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | Patient$departmentArgs<ExtArgs>
     box?: boolean | Patient$boxArgs<ExtArgs>
@@ -5546,6 +5692,9 @@ export namespace Prisma {
       status: $Enums.PatientStatus
       notes: string | null
       boxId: string | null
+      boxStartDate: Date | null
+      boxEndDate: Date | null
+      boxDurationDays: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["patient"]>
@@ -5986,6 +6135,9 @@ export namespace Prisma {
     readonly status: FieldRef<"Patient", 'PatientStatus'>
     readonly notes: FieldRef<"Patient", 'String'>
     readonly boxId: FieldRef<"Patient", 'String'>
+    readonly boxStartDate: FieldRef<"Patient", 'DateTime'>
+    readonly boxEndDate: FieldRef<"Patient", 'DateTime'>
+    readonly boxDurationDays: FieldRef<"Patient", 'Int'>
     readonly createdAt: FieldRef<"Patient", 'DateTime'>
     readonly updatedAt: FieldRef<"Patient", 'DateTime'>
   }
@@ -6682,6 +6834,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     medicineAssignments?: boolean | Medicine$medicineAssignmentsArgs<ExtArgs>
+    boxContents?: boolean | Medicine$boxContentsArgs<ExtArgs>
     _count?: boolean | MedicineCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["medicine"]>
 
@@ -6721,6 +6874,7 @@ export namespace Prisma {
   export type MedicineOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "administrationMethod" | "defaultDosage" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["medicine"]>
   export type MedicineInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     medicineAssignments?: boolean | Medicine$medicineAssignmentsArgs<ExtArgs>
+    boxContents?: boolean | Medicine$boxContentsArgs<ExtArgs>
     _count?: boolean | MedicineCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MedicineIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -6730,6 +6884,7 @@ export namespace Prisma {
     name: "Medicine"
     objects: {
       medicineAssignments: Prisma.$MedicineAssignmentPayload<ExtArgs>[]
+      boxContents: Prisma.$BoxContentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7135,6 +7290,7 @@ export namespace Prisma {
   export interface Prisma__MedicineClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     medicineAssignments<T extends Medicine$medicineAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Medicine$medicineAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MedicineAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    boxContents<T extends Medicine$boxContentsArgs<ExtArgs> = {}>(args?: Subset<T, Medicine$boxContentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7589,6 +7745,30 @@ export namespace Prisma {
   }
 
   /**
+   * Medicine.boxContents
+   */
+  export type Medicine$boxContentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    where?: BoxContentWhereInput
+    orderBy?: BoxContentOrderByWithRelationInput | BoxContentOrderByWithRelationInput[]
+    cursor?: BoxContentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoxContentScalarFieldEnum | BoxContentScalarFieldEnum[]
+  }
+
+  /**
    * Medicine without action
    */
   export type MedicineDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7789,6 +7969,7 @@ export namespace Prisma {
     updatedAt?: boolean
     patients?: boolean | Box$patientsArgs<ExtArgs>
     medicineAssignments?: boolean | Box$medicineAssignmentsArgs<ExtArgs>
+    contents?: boolean | Box$contentsArgs<ExtArgs>
     _count?: boolean | BoxCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["box"]>
 
@@ -7826,6 +8007,7 @@ export namespace Prisma {
   export type BoxInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     patients?: boolean | Box$patientsArgs<ExtArgs>
     medicineAssignments?: boolean | Box$medicineAssignmentsArgs<ExtArgs>
+    contents?: boolean | Box$contentsArgs<ExtArgs>
     _count?: boolean | BoxCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BoxIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -7836,6 +8018,7 @@ export namespace Prisma {
     objects: {
       patients: Prisma.$PatientPayload<ExtArgs>[]
       medicineAssignments: Prisma.$MedicineAssignmentPayload<ExtArgs>[]
+      contents: Prisma.$BoxContentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8241,6 +8424,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     patients<T extends Box$patientsArgs<ExtArgs> = {}>(args?: Subset<T, Box$patientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PatientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     medicineAssignments<T extends Box$medicineAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Box$medicineAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MedicineAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contents<T extends Box$contentsArgs<ExtArgs> = {}>(args?: Subset<T, Box$contentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8718,6 +8902,30 @@ export namespace Prisma {
   }
 
   /**
+   * Box.contents
+   */
+  export type Box$contentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    where?: BoxContentWhereInput
+    orderBy?: BoxContentOrderByWithRelationInput | BoxContentOrderByWithRelationInput[]
+    cursor?: BoxContentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoxContentScalarFieldEnum | BoxContentScalarFieldEnum[]
+  }
+
+  /**
    * Box without action
    */
   export type BoxDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8733,6 +8941,1125 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BoxInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BoxContent
+   */
+
+  export type AggregateBoxContent = {
+    _count: BoxContentCountAggregateOutputType | null
+    _min: BoxContentMinAggregateOutputType | null
+    _max: BoxContentMaxAggregateOutputType | null
+  }
+
+  export type BoxContentMinAggregateOutputType = {
+    id: string | null
+    boxId: string | null
+    medicineId: string | null
+    dosage: string | null
+    administrationMethod: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BoxContentMaxAggregateOutputType = {
+    id: string | null
+    boxId: string | null
+    medicineId: string | null
+    dosage: string | null
+    administrationMethod: string | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BoxContentCountAggregateOutputType = {
+    id: number
+    boxId: number
+    medicineId: number
+    dosage: number
+    administrationMethod: number
+    scheduleTimes: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BoxContentMinAggregateInputType = {
+    id?: true
+    boxId?: true
+    medicineId?: true
+    dosage?: true
+    administrationMethod?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BoxContentMaxAggregateInputType = {
+    id?: true
+    boxId?: true
+    medicineId?: true
+    dosage?: true
+    administrationMethod?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BoxContentCountAggregateInputType = {
+    id?: true
+    boxId?: true
+    medicineId?: true
+    dosage?: true
+    administrationMethod?: true
+    scheduleTimes?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BoxContentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoxContent to aggregate.
+     */
+    where?: BoxContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BoxContents to fetch.
+     */
+    orderBy?: BoxContentOrderByWithRelationInput | BoxContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BoxContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BoxContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BoxContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BoxContents
+    **/
+    _count?: true | BoxContentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BoxContentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BoxContentMaxAggregateInputType
+  }
+
+  export type GetBoxContentAggregateType<T extends BoxContentAggregateArgs> = {
+        [P in keyof T & keyof AggregateBoxContent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBoxContent[P]>
+      : GetScalarType<T[P], AggregateBoxContent[P]>
+  }
+
+
+
+
+  export type BoxContentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoxContentWhereInput
+    orderBy?: BoxContentOrderByWithAggregationInput | BoxContentOrderByWithAggregationInput[]
+    by: BoxContentScalarFieldEnum[] | BoxContentScalarFieldEnum
+    having?: BoxContentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BoxContentCountAggregateInputType | true
+    _min?: BoxContentMinAggregateInputType
+    _max?: BoxContentMaxAggregateInputType
+  }
+
+  export type BoxContentGroupByOutputType = {
+    id: string
+    boxId: string
+    medicineId: string
+    dosage: string | null
+    administrationMethod: string | null
+    scheduleTimes: string[]
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BoxContentCountAggregateOutputType | null
+    _min: BoxContentMinAggregateOutputType | null
+    _max: BoxContentMaxAggregateOutputType | null
+  }
+
+  type GetBoxContentGroupByPayload<T extends BoxContentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BoxContentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BoxContentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BoxContentGroupByOutputType[P]>
+            : GetScalarType<T[P], BoxContentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BoxContentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boxId?: boolean
+    medicineId?: boolean
+    dosage?: boolean
+    administrationMethod?: boolean
+    scheduleTimes?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    box?: boolean | BoxDefaultArgs<ExtArgs>
+    medicine?: boolean | MedicineDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boxContent"]>
+
+  export type BoxContentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boxId?: boolean
+    medicineId?: boolean
+    dosage?: boolean
+    administrationMethod?: boolean
+    scheduleTimes?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    box?: boolean | BoxDefaultArgs<ExtArgs>
+    medicine?: boolean | MedicineDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boxContent"]>
+
+  export type BoxContentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    boxId?: boolean
+    medicineId?: boolean
+    dosage?: boolean
+    administrationMethod?: boolean
+    scheduleTimes?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    box?: boolean | BoxDefaultArgs<ExtArgs>
+    medicine?: boolean | MedicineDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["boxContent"]>
+
+  export type BoxContentSelectScalar = {
+    id?: boolean
+    boxId?: boolean
+    medicineId?: boolean
+    dosage?: boolean
+    administrationMethod?: boolean
+    scheduleTimes?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BoxContentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "boxId" | "medicineId" | "dosage" | "administrationMethod" | "scheduleTimes" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["boxContent"]>
+  export type BoxContentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    box?: boolean | BoxDefaultArgs<ExtArgs>
+    medicine?: boolean | MedicineDefaultArgs<ExtArgs>
+  }
+  export type BoxContentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    box?: boolean | BoxDefaultArgs<ExtArgs>
+    medicine?: boolean | MedicineDefaultArgs<ExtArgs>
+  }
+  export type BoxContentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    box?: boolean | BoxDefaultArgs<ExtArgs>
+    medicine?: boolean | MedicineDefaultArgs<ExtArgs>
+  }
+
+  export type $BoxContentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BoxContent"
+    objects: {
+      box: Prisma.$BoxPayload<ExtArgs>
+      medicine: Prisma.$MedicinePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      boxId: string
+      medicineId: string
+      dosage: string | null
+      administrationMethod: string | null
+      scheduleTimes: string[]
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["boxContent"]>
+    composites: {}
+  }
+
+  type BoxContentGetPayload<S extends boolean | null | undefined | BoxContentDefaultArgs> = $Result.GetResult<Prisma.$BoxContentPayload, S>
+
+  type BoxContentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BoxContentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BoxContentCountAggregateInputType | true
+    }
+
+  export interface BoxContentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BoxContent'], meta: { name: 'BoxContent' } }
+    /**
+     * Find zero or one BoxContent that matches the filter.
+     * @param {BoxContentFindUniqueArgs} args - Arguments to find a BoxContent
+     * @example
+     * // Get one BoxContent
+     * const boxContent = await prisma.boxContent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BoxContentFindUniqueArgs>(args: SelectSubset<T, BoxContentFindUniqueArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BoxContent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BoxContentFindUniqueOrThrowArgs} args - Arguments to find a BoxContent
+     * @example
+     * // Get one BoxContent
+     * const boxContent = await prisma.boxContent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BoxContentFindUniqueOrThrowArgs>(args: SelectSubset<T, BoxContentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoxContent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentFindFirstArgs} args - Arguments to find a BoxContent
+     * @example
+     * // Get one BoxContent
+     * const boxContent = await prisma.boxContent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BoxContentFindFirstArgs>(args?: SelectSubset<T, BoxContentFindFirstArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BoxContent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentFindFirstOrThrowArgs} args - Arguments to find a BoxContent
+     * @example
+     * // Get one BoxContent
+     * const boxContent = await prisma.boxContent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BoxContentFindFirstOrThrowArgs>(args?: SelectSubset<T, BoxContentFindFirstOrThrowArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BoxContents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BoxContents
+     * const boxContents = await prisma.boxContent.findMany()
+     * 
+     * // Get first 10 BoxContents
+     * const boxContents = await prisma.boxContent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const boxContentWithIdOnly = await prisma.boxContent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BoxContentFindManyArgs>(args?: SelectSubset<T, BoxContentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BoxContent.
+     * @param {BoxContentCreateArgs} args - Arguments to create a BoxContent.
+     * @example
+     * // Create one BoxContent
+     * const BoxContent = await prisma.boxContent.create({
+     *   data: {
+     *     // ... data to create a BoxContent
+     *   }
+     * })
+     * 
+     */
+    create<T extends BoxContentCreateArgs>(args: SelectSubset<T, BoxContentCreateArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BoxContents.
+     * @param {BoxContentCreateManyArgs} args - Arguments to create many BoxContents.
+     * @example
+     * // Create many BoxContents
+     * const boxContent = await prisma.boxContent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BoxContentCreateManyArgs>(args?: SelectSubset<T, BoxContentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BoxContents and returns the data saved in the database.
+     * @param {BoxContentCreateManyAndReturnArgs} args - Arguments to create many BoxContents.
+     * @example
+     * // Create many BoxContents
+     * const boxContent = await prisma.boxContent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BoxContents and only return the `id`
+     * const boxContentWithIdOnly = await prisma.boxContent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BoxContentCreateManyAndReturnArgs>(args?: SelectSubset<T, BoxContentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BoxContent.
+     * @param {BoxContentDeleteArgs} args - Arguments to delete one BoxContent.
+     * @example
+     * // Delete one BoxContent
+     * const BoxContent = await prisma.boxContent.delete({
+     *   where: {
+     *     // ... filter to delete one BoxContent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BoxContentDeleteArgs>(args: SelectSubset<T, BoxContentDeleteArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BoxContent.
+     * @param {BoxContentUpdateArgs} args - Arguments to update one BoxContent.
+     * @example
+     * // Update one BoxContent
+     * const boxContent = await prisma.boxContent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BoxContentUpdateArgs>(args: SelectSubset<T, BoxContentUpdateArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BoxContents.
+     * @param {BoxContentDeleteManyArgs} args - Arguments to filter BoxContents to delete.
+     * @example
+     * // Delete a few BoxContents
+     * const { count } = await prisma.boxContent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BoxContentDeleteManyArgs>(args?: SelectSubset<T, BoxContentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoxContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BoxContents
+     * const boxContent = await prisma.boxContent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BoxContentUpdateManyArgs>(args: SelectSubset<T, BoxContentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BoxContents and returns the data updated in the database.
+     * @param {BoxContentUpdateManyAndReturnArgs} args - Arguments to update many BoxContents.
+     * @example
+     * // Update many BoxContents
+     * const boxContent = await prisma.boxContent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BoxContents and only return the `id`
+     * const boxContentWithIdOnly = await prisma.boxContent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BoxContentUpdateManyAndReturnArgs>(args: SelectSubset<T, BoxContentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BoxContent.
+     * @param {BoxContentUpsertArgs} args - Arguments to update or create a BoxContent.
+     * @example
+     * // Update or create a BoxContent
+     * const boxContent = await prisma.boxContent.upsert({
+     *   create: {
+     *     // ... data to create a BoxContent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BoxContent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BoxContentUpsertArgs>(args: SelectSubset<T, BoxContentUpsertArgs<ExtArgs>>): Prisma__BoxContentClient<$Result.GetResult<Prisma.$BoxContentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BoxContents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentCountArgs} args - Arguments to filter BoxContents to count.
+     * @example
+     * // Count the number of BoxContents
+     * const count = await prisma.boxContent.count({
+     *   where: {
+     *     // ... the filter for the BoxContents we want to count
+     *   }
+     * })
+    **/
+    count<T extends BoxContentCountArgs>(
+      args?: Subset<T, BoxContentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BoxContentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BoxContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BoxContentAggregateArgs>(args: Subset<T, BoxContentAggregateArgs>): Prisma.PrismaPromise<GetBoxContentAggregateType<T>>
+
+    /**
+     * Group by BoxContent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BoxContentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BoxContentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BoxContentGroupByArgs['orderBy'] }
+        : { orderBy?: BoxContentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BoxContentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBoxContentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BoxContent model
+   */
+  readonly fields: BoxContentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BoxContent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BoxContentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    box<T extends BoxDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BoxDefaultArgs<ExtArgs>>): Prisma__BoxClient<$Result.GetResult<Prisma.$BoxPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    medicine<T extends MedicineDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MedicineDefaultArgs<ExtArgs>>): Prisma__MedicineClient<$Result.GetResult<Prisma.$MedicinePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BoxContent model
+   */
+  interface BoxContentFieldRefs {
+    readonly id: FieldRef<"BoxContent", 'String'>
+    readonly boxId: FieldRef<"BoxContent", 'String'>
+    readonly medicineId: FieldRef<"BoxContent", 'String'>
+    readonly dosage: FieldRef<"BoxContent", 'String'>
+    readonly administrationMethod: FieldRef<"BoxContent", 'String'>
+    readonly scheduleTimes: FieldRef<"BoxContent", 'String[]'>
+    readonly notes: FieldRef<"BoxContent", 'String'>
+    readonly createdAt: FieldRef<"BoxContent", 'DateTime'>
+    readonly updatedAt: FieldRef<"BoxContent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BoxContent findUnique
+   */
+  export type BoxContentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * Filter, which BoxContent to fetch.
+     */
+    where: BoxContentWhereUniqueInput
+  }
+
+  /**
+   * BoxContent findUniqueOrThrow
+   */
+  export type BoxContentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * Filter, which BoxContent to fetch.
+     */
+    where: BoxContentWhereUniqueInput
+  }
+
+  /**
+   * BoxContent findFirst
+   */
+  export type BoxContentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * Filter, which BoxContent to fetch.
+     */
+    where?: BoxContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BoxContents to fetch.
+     */
+    orderBy?: BoxContentOrderByWithRelationInput | BoxContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BoxContents.
+     */
+    cursor?: BoxContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BoxContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BoxContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BoxContents.
+     */
+    distinct?: BoxContentScalarFieldEnum | BoxContentScalarFieldEnum[]
+  }
+
+  /**
+   * BoxContent findFirstOrThrow
+   */
+  export type BoxContentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * Filter, which BoxContent to fetch.
+     */
+    where?: BoxContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BoxContents to fetch.
+     */
+    orderBy?: BoxContentOrderByWithRelationInput | BoxContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BoxContents.
+     */
+    cursor?: BoxContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BoxContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BoxContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BoxContents.
+     */
+    distinct?: BoxContentScalarFieldEnum | BoxContentScalarFieldEnum[]
+  }
+
+  /**
+   * BoxContent findMany
+   */
+  export type BoxContentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * Filter, which BoxContents to fetch.
+     */
+    where?: BoxContentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BoxContents to fetch.
+     */
+    orderBy?: BoxContentOrderByWithRelationInput | BoxContentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BoxContents.
+     */
+    cursor?: BoxContentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BoxContents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BoxContents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BoxContents.
+     */
+    distinct?: BoxContentScalarFieldEnum | BoxContentScalarFieldEnum[]
+  }
+
+  /**
+   * BoxContent create
+   */
+  export type BoxContentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BoxContent.
+     */
+    data: XOR<BoxContentCreateInput, BoxContentUncheckedCreateInput>
+  }
+
+  /**
+   * BoxContent createMany
+   */
+  export type BoxContentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BoxContents.
+     */
+    data: BoxContentCreateManyInput | BoxContentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BoxContent createManyAndReturn
+   */
+  export type BoxContentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * The data used to create many BoxContents.
+     */
+    data: BoxContentCreateManyInput | BoxContentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoxContent update
+   */
+  export type BoxContentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BoxContent.
+     */
+    data: XOR<BoxContentUpdateInput, BoxContentUncheckedUpdateInput>
+    /**
+     * Choose, which BoxContent to update.
+     */
+    where: BoxContentWhereUniqueInput
+  }
+
+  /**
+   * BoxContent updateMany
+   */
+  export type BoxContentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BoxContents.
+     */
+    data: XOR<BoxContentUpdateManyMutationInput, BoxContentUncheckedUpdateManyInput>
+    /**
+     * Filter which BoxContents to update
+     */
+    where?: BoxContentWhereInput
+    /**
+     * Limit how many BoxContents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoxContent updateManyAndReturn
+   */
+  export type BoxContentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * The data used to update BoxContents.
+     */
+    data: XOR<BoxContentUpdateManyMutationInput, BoxContentUncheckedUpdateManyInput>
+    /**
+     * Filter which BoxContents to update
+     */
+    where?: BoxContentWhereInput
+    /**
+     * Limit how many BoxContents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BoxContent upsert
+   */
+  export type BoxContentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BoxContent to update in case it exists.
+     */
+    where: BoxContentWhereUniqueInput
+    /**
+     * In case the BoxContent found by the `where` argument doesn't exist, create a new BoxContent with this data.
+     */
+    create: XOR<BoxContentCreateInput, BoxContentUncheckedCreateInput>
+    /**
+     * In case the BoxContent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BoxContentUpdateInput, BoxContentUncheckedUpdateInput>
+  }
+
+  /**
+   * BoxContent delete
+   */
+  export type BoxContentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
+    /**
+     * Filter which BoxContent to delete.
+     */
+    where: BoxContentWhereUniqueInput
+  }
+
+  /**
+   * BoxContent deleteMany
+   */
+  export type BoxContentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BoxContents to delete
+     */
+    where?: BoxContentWhereInput
+    /**
+     * Limit how many BoxContents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BoxContent without action
+   */
+  export type BoxContentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BoxContent
+     */
+    select?: BoxContentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BoxContent
+     */
+    omit?: BoxContentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoxContentInclude<ExtArgs> | null
   }
 
 
@@ -11246,6 +12573,9 @@ export namespace Prisma {
     status: 'status',
     notes: 'notes',
     boxId: 'boxId',
+    boxStartDate: 'boxStartDate',
+    boxEndDate: 'boxEndDate',
+    boxDurationDays: 'boxDurationDays',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -11278,6 +12608,21 @@ export namespace Prisma {
   };
 
   export type BoxScalarFieldEnum = (typeof BoxScalarFieldEnum)[keyof typeof BoxScalarFieldEnum]
+
+
+  export const BoxContentScalarFieldEnum: {
+    id: 'id',
+    boxId: 'boxId',
+    medicineId: 'medicineId',
+    dosage: 'dosage',
+    administrationMethod: 'administrationMethod',
+    scheduleTimes: 'scheduleTimes',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BoxContentScalarFieldEnum = (typeof BoxContentScalarFieldEnum)[keyof typeof BoxContentScalarFieldEnum]
 
 
   export const MedicineAssignmentScalarFieldEnum: {
@@ -11754,6 +13099,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFilter<"Patient"> | $Enums.PatientStatus
     notes?: StringNullableFilter<"Patient"> | string | null
     boxId?: StringNullableFilter<"Patient"> | string | null
+    boxStartDate?: DateTimeNullableFilter<"Patient"> | Date | string | null
+    boxEndDate?: DateTimeNullableFilter<"Patient"> | Date | string | null
+    boxDurationDays?: IntNullableFilter<"Patient"> | number | null
     createdAt?: DateTimeFilter<"Patient"> | Date | string
     updatedAt?: DateTimeFilter<"Patient"> | Date | string
     department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
@@ -11774,6 +13122,9 @@ export namespace Prisma {
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     boxId?: SortOrderInput | SortOrder
+    boxStartDate?: SortOrderInput | SortOrder
+    boxEndDate?: SortOrderInput | SortOrder
+    boxDurationDays?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     department?: DepartmentOrderByWithRelationInput
@@ -11797,6 +13148,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFilter<"Patient"> | $Enums.PatientStatus
     notes?: StringNullableFilter<"Patient"> | string | null
     boxId?: StringNullableFilter<"Patient"> | string | null
+    boxStartDate?: DateTimeNullableFilter<"Patient"> | Date | string | null
+    boxEndDate?: DateTimeNullableFilter<"Patient"> | Date | string | null
+    boxDurationDays?: IntNullableFilter<"Patient"> | number | null
     createdAt?: DateTimeFilter<"Patient"> | Date | string
     updatedAt?: DateTimeFilter<"Patient"> | Date | string
     department?: XOR<DepartmentNullableScalarRelationFilter, DepartmentWhereInput> | null
@@ -11817,6 +13171,9 @@ export namespace Prisma {
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     boxId?: SortOrderInput | SortOrder
+    boxStartDate?: SortOrderInput | SortOrder
+    boxEndDate?: SortOrderInput | SortOrder
+    boxDurationDays?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PatientCountOrderByAggregateInput
@@ -11841,6 +13198,9 @@ export namespace Prisma {
     status?: EnumPatientStatusWithAggregatesFilter<"Patient"> | $Enums.PatientStatus
     notes?: StringNullableWithAggregatesFilter<"Patient"> | string | null
     boxId?: StringNullableWithAggregatesFilter<"Patient"> | string | null
+    boxStartDate?: DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null
+    boxEndDate?: DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null
+    boxDurationDays?: IntNullableWithAggregatesFilter<"Patient"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Patient"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Patient"> | Date | string
   }
@@ -11858,6 +13218,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Medicine"> | Date | string
     updatedAt?: DateTimeFilter<"Medicine"> | Date | string
     medicineAssignments?: MedicineAssignmentListRelationFilter
+    boxContents?: BoxContentListRelationFilter
   }
 
   export type MedicineOrderByWithRelationInput = {
@@ -11870,6 +13231,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     medicineAssignments?: MedicineAssignmentOrderByRelationAggregateInput
+    boxContents?: BoxContentOrderByRelationAggregateInput
   }
 
   export type MedicineWhereUniqueInput = Prisma.AtLeast<{
@@ -11885,6 +13247,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Medicine"> | Date | string
     updatedAt?: DateTimeFilter<"Medicine"> | Date | string
     medicineAssignments?: MedicineAssignmentListRelationFilter
+    boxContents?: BoxContentListRelationFilter
   }, "id">
 
   export type MedicineOrderByWithAggregationInput = {
@@ -11928,6 +13291,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Box"> | Date | string
     patients?: PatientListRelationFilter
     medicineAssignments?: MedicineAssignmentListRelationFilter
+    contents?: BoxContentListRelationFilter
   }
 
   export type BoxOrderByWithRelationInput = {
@@ -11940,6 +13304,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     patients?: PatientOrderByRelationAggregateInput
     medicineAssignments?: MedicineAssignmentOrderByRelationAggregateInput
+    contents?: BoxContentOrderByRelationAggregateInput
   }
 
   export type BoxWhereUniqueInput = Prisma.AtLeast<{
@@ -11955,6 +13320,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Box"> | Date | string
     patients?: PatientListRelationFilter
     medicineAssignments?: MedicineAssignmentListRelationFilter
+    contents?: BoxContentListRelationFilter
   }, "id" | "boxLabel">
 
   export type BoxOrderByWithAggregationInput = {
@@ -11981,6 +13347,84 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"Box"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Box"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Box"> | Date | string
+  }
+
+  export type BoxContentWhereInput = {
+    AND?: BoxContentWhereInput | BoxContentWhereInput[]
+    OR?: BoxContentWhereInput[]
+    NOT?: BoxContentWhereInput | BoxContentWhereInput[]
+    id?: StringFilter<"BoxContent"> | string
+    boxId?: StringFilter<"BoxContent"> | string
+    medicineId?: StringFilter<"BoxContent"> | string
+    dosage?: StringNullableFilter<"BoxContent"> | string | null
+    administrationMethod?: StringNullableFilter<"BoxContent"> | string | null
+    scheduleTimes?: StringNullableListFilter<"BoxContent">
+    notes?: StringNullableFilter<"BoxContent"> | string | null
+    createdAt?: DateTimeFilter<"BoxContent"> | Date | string
+    updatedAt?: DateTimeFilter<"BoxContent"> | Date | string
+    box?: XOR<BoxScalarRelationFilter, BoxWhereInput>
+    medicine?: XOR<MedicineScalarRelationFilter, MedicineWhereInput>
+  }
+
+  export type BoxContentOrderByWithRelationInput = {
+    id?: SortOrder
+    boxId?: SortOrder
+    medicineId?: SortOrder
+    dosage?: SortOrderInput | SortOrder
+    administrationMethod?: SortOrderInput | SortOrder
+    scheduleTimes?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    box?: BoxOrderByWithRelationInput
+    medicine?: MedicineOrderByWithRelationInput
+  }
+
+  export type BoxContentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BoxContentWhereInput | BoxContentWhereInput[]
+    OR?: BoxContentWhereInput[]
+    NOT?: BoxContentWhereInput | BoxContentWhereInput[]
+    boxId?: StringFilter<"BoxContent"> | string
+    medicineId?: StringFilter<"BoxContent"> | string
+    dosage?: StringNullableFilter<"BoxContent"> | string | null
+    administrationMethod?: StringNullableFilter<"BoxContent"> | string | null
+    scheduleTimes?: StringNullableListFilter<"BoxContent">
+    notes?: StringNullableFilter<"BoxContent"> | string | null
+    createdAt?: DateTimeFilter<"BoxContent"> | Date | string
+    updatedAt?: DateTimeFilter<"BoxContent"> | Date | string
+    box?: XOR<BoxScalarRelationFilter, BoxWhereInput>
+    medicine?: XOR<MedicineScalarRelationFilter, MedicineWhereInput>
+  }, "id">
+
+  export type BoxContentOrderByWithAggregationInput = {
+    id?: SortOrder
+    boxId?: SortOrder
+    medicineId?: SortOrder
+    dosage?: SortOrderInput | SortOrder
+    administrationMethod?: SortOrderInput | SortOrder
+    scheduleTimes?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BoxContentCountOrderByAggregateInput
+    _max?: BoxContentMaxOrderByAggregateInput
+    _min?: BoxContentMinOrderByAggregateInput
+  }
+
+  export type BoxContentScalarWhereWithAggregatesInput = {
+    AND?: BoxContentScalarWhereWithAggregatesInput | BoxContentScalarWhereWithAggregatesInput[]
+    OR?: BoxContentScalarWhereWithAggregatesInput[]
+    NOT?: BoxContentScalarWhereWithAggregatesInput | BoxContentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BoxContent"> | string
+    boxId?: StringWithAggregatesFilter<"BoxContent"> | string
+    medicineId?: StringWithAggregatesFilter<"BoxContent"> | string
+    dosage?: StringNullableWithAggregatesFilter<"BoxContent"> | string | null
+    administrationMethod?: StringNullableWithAggregatesFilter<"BoxContent"> | string | null
+    scheduleTimes?: StringNullableListFilter<"BoxContent">
+    notes?: StringNullableWithAggregatesFilter<"BoxContent"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BoxContent"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BoxContent"> | Date | string
   }
 
   export type MedicineAssignmentWhereInput = {
@@ -12421,6 +13865,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     department?: DepartmentCreateNestedOneWithoutPatientsInput
@@ -12441,6 +13888,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes?: string | null
     boxId?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutPatientInput
@@ -12457,6 +13907,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneWithoutPatientsNestedInput
@@ -12477,6 +13930,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     boxId?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutPatientNestedInput
@@ -12495,6 +13951,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes?: string | null
     boxId?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12509,6 +13968,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12525,6 +13987,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     boxId?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12539,6 +14004,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentCreateNestedManyWithoutMedicineInput
+    boxContents?: BoxContentCreateNestedManyWithoutMedicineInput
   }
 
   export type MedicineUncheckedCreateInput = {
@@ -12551,6 +14017,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutMedicineInput
+    boxContents?: BoxContentUncheckedCreateNestedManyWithoutMedicineInput
   }
 
   export type MedicineUpdateInput = {
@@ -12563,6 +14030,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUpdateManyWithoutMedicineNestedInput
+    boxContents?: BoxContentUpdateManyWithoutMedicineNestedInput
   }
 
   export type MedicineUncheckedUpdateInput = {
@@ -12575,6 +14043,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutMedicineNestedInput
+    boxContents?: BoxContentUncheckedUpdateManyWithoutMedicineNestedInput
   }
 
   export type MedicineCreateManyInput = {
@@ -12620,6 +14089,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     patients?: PatientCreateNestedManyWithoutBoxInput
     medicineAssignments?: MedicineAssignmentCreateNestedManyWithoutBoxInput
+    contents?: BoxContentCreateNestedManyWithoutBoxInput
   }
 
   export type BoxUncheckedCreateInput = {
@@ -12632,6 +14102,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     patients?: PatientUncheckedCreateNestedManyWithoutBoxInput
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutBoxInput
+    contents?: BoxContentUncheckedCreateNestedManyWithoutBoxInput
   }
 
   export type BoxUpdateInput = {
@@ -12644,6 +14115,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     patients?: PatientUpdateManyWithoutBoxNestedInput
     medicineAssignments?: MedicineAssignmentUpdateManyWithoutBoxNestedInput
+    contents?: BoxContentUpdateManyWithoutBoxNestedInput
   }
 
   export type BoxUncheckedUpdateInput = {
@@ -12656,6 +14128,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     patients?: PatientUncheckedUpdateManyWithoutBoxNestedInput
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutBoxNestedInput
+    contents?: BoxContentUncheckedUpdateManyWithoutBoxNestedInput
   }
 
   export type BoxCreateManyInput = {
@@ -12683,6 +14156,88 @@ export namespace Prisma {
     boxLabel?: StringFieldUpdateOperationsInput | string
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumBoxStatusFieldUpdateOperationsInput | $Enums.BoxStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoxContentCreateInput = {
+    id?: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    box: BoxCreateNestedOneWithoutContentsInput
+    medicine: MedicineCreateNestedOneWithoutBoxContentsInput
+  }
+
+  export type BoxContentUncheckedCreateInput = {
+    id?: string
+    boxId: string
+    medicineId: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BoxContentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    box?: BoxUpdateOneRequiredWithoutContentsNestedInput
+    medicine?: MedicineUpdateOneRequiredWithoutBoxContentsNestedInput
+  }
+
+  export type BoxContentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boxId?: StringFieldUpdateOperationsInput | string
+    medicineId?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoxContentCreateManyInput = {
+    id?: string
+    boxId: string
+    medicineId: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BoxContentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoxContentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boxId?: StringFieldUpdateOperationsInput | string
+    medicineId?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13216,6 +14771,28 @@ export namespace Prisma {
     not?: NestedEnumPatientStatusFilter<$PrismaModel> | $Enums.PatientStatus
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type DepartmentNullableScalarRelationFilter = {
     is?: DepartmentWhereInput | null
     isNot?: DepartmentWhereInput | null
@@ -13253,12 +14830,16 @@ export namespace Prisma {
     status?: SortOrder
     notes?: SortOrder
     boxId?: SortOrder
+    boxStartDate?: SortOrder
+    boxEndDate?: SortOrder
+    boxDurationDays?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type PatientAvgOrderByAggregateInput = {
     age?: SortOrder
+    boxDurationDays?: SortOrder
   }
 
   export type PatientMaxOrderByAggregateInput = {
@@ -13272,6 +14853,9 @@ export namespace Prisma {
     status?: SortOrder
     notes?: SortOrder
     boxId?: SortOrder
+    boxStartDate?: SortOrder
+    boxEndDate?: SortOrder
+    boxDurationDays?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -13287,12 +14871,16 @@ export namespace Prisma {
     status?: SortOrder
     notes?: SortOrder
     boxId?: SortOrder
+    boxStartDate?: SortOrder
+    boxEndDate?: SortOrder
+    boxDurationDays?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type PatientSumOrderByAggregateInput = {
     age?: SortOrder
+    boxDurationDays?: SortOrder
   }
 
   export type EnumGenderWithAggregatesFilter<$PrismaModel = never> = {
@@ -13333,11 +14921,51 @@ export namespace Prisma {
     _max?: NestedEnumPatientStatusFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type EnumMedicineTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.MedicineType | EnumMedicineTypeFieldRefInput<$PrismaModel>
     in?: $Enums.MedicineType[] | ListEnumMedicineTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.MedicineType[] | ListEnumMedicineTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumMedicineTypeFilter<$PrismaModel> | $Enums.MedicineType
+  }
+
+  export type BoxContentListRelationFilter = {
+    every?: BoxContentWhereInput
+    some?: BoxContentWhereInput
+    none?: BoxContentWhereInput
+  }
+
+  export type BoxContentOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type MedicineCountOrderByAggregateInput = {
@@ -13430,6 +15058,50 @@ export namespace Prisma {
     _max?: NestedEnumBoxStatusFilter<$PrismaModel>
   }
 
+  export type BoxScalarRelationFilter = {
+    is?: BoxWhereInput
+    isNot?: BoxWhereInput
+  }
+
+  export type MedicineScalarRelationFilter = {
+    is?: MedicineWhereInput
+    isNot?: MedicineWhereInput
+  }
+
+  export type BoxContentCountOrderByAggregateInput = {
+    id?: SortOrder
+    boxId?: SortOrder
+    medicineId?: SortOrder
+    dosage?: SortOrder
+    administrationMethod?: SortOrder
+    scheduleTimes?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BoxContentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    boxId?: SortOrder
+    medicineId?: SortOrder
+    dosage?: SortOrder
+    administrationMethod?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BoxContentMinOrderByAggregateInput = {
+    id?: SortOrder
+    boxId?: SortOrder
+    medicineId?: SortOrder
+    dosage?: SortOrder
+    administrationMethod?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -13445,11 +15117,6 @@ export namespace Prisma {
   export type PatientScalarRelationFilter = {
     is?: PatientWhereInput
     isNot?: PatientWhereInput
-  }
-
-  export type MedicineScalarRelationFilter = {
-    is?: MedicineWhereInput
-    isNot?: MedicineWhereInput
   }
 
   export type MedicineAssignmentCountOrderByAggregateInput = {
@@ -13530,17 +15197,6 @@ export namespace Prisma {
     _max?: NestedEnumAssignmentStatusFilter<$PrismaModel>
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type EnumAdministrationStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AdministrationStatus | EnumAdministrationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AdministrationStatus[] | ListEnumAdministrationStatusFieldRefInput<$PrismaModel>
@@ -13598,20 +15254,6 @@ export namespace Prisma {
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type EnumAdministrationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -13853,6 +15495,18 @@ export namespace Prisma {
     set?: $Enums.PatientStatus
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DepartmentUpdateOneWithoutPatientsNestedInput = {
     create?: XOR<DepartmentCreateWithoutPatientsInput, DepartmentUncheckedCreateWithoutPatientsInput>
     connectOrCreate?: DepartmentCreateOrConnectWithoutPatientsInput
@@ -13936,11 +15590,25 @@ export namespace Prisma {
     connect?: MedicineAssignmentWhereUniqueInput | MedicineAssignmentWhereUniqueInput[]
   }
 
+  export type BoxContentCreateNestedManyWithoutMedicineInput = {
+    create?: XOR<BoxContentCreateWithoutMedicineInput, BoxContentUncheckedCreateWithoutMedicineInput> | BoxContentCreateWithoutMedicineInput[] | BoxContentUncheckedCreateWithoutMedicineInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutMedicineInput | BoxContentCreateOrConnectWithoutMedicineInput[]
+    createMany?: BoxContentCreateManyMedicineInputEnvelope
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+  }
+
   export type MedicineAssignmentUncheckedCreateNestedManyWithoutMedicineInput = {
     create?: XOR<MedicineAssignmentCreateWithoutMedicineInput, MedicineAssignmentUncheckedCreateWithoutMedicineInput> | MedicineAssignmentCreateWithoutMedicineInput[] | MedicineAssignmentUncheckedCreateWithoutMedicineInput[]
     connectOrCreate?: MedicineAssignmentCreateOrConnectWithoutMedicineInput | MedicineAssignmentCreateOrConnectWithoutMedicineInput[]
     createMany?: MedicineAssignmentCreateManyMedicineInputEnvelope
     connect?: MedicineAssignmentWhereUniqueInput | MedicineAssignmentWhereUniqueInput[]
+  }
+
+  export type BoxContentUncheckedCreateNestedManyWithoutMedicineInput = {
+    create?: XOR<BoxContentCreateWithoutMedicineInput, BoxContentUncheckedCreateWithoutMedicineInput> | BoxContentCreateWithoutMedicineInput[] | BoxContentUncheckedCreateWithoutMedicineInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutMedicineInput | BoxContentCreateOrConnectWithoutMedicineInput[]
+    createMany?: BoxContentCreateManyMedicineInputEnvelope
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
   }
 
   export type EnumMedicineTypeFieldUpdateOperationsInput = {
@@ -13961,6 +15629,20 @@ export namespace Prisma {
     deleteMany?: MedicineAssignmentScalarWhereInput | MedicineAssignmentScalarWhereInput[]
   }
 
+  export type BoxContentUpdateManyWithoutMedicineNestedInput = {
+    create?: XOR<BoxContentCreateWithoutMedicineInput, BoxContentUncheckedCreateWithoutMedicineInput> | BoxContentCreateWithoutMedicineInput[] | BoxContentUncheckedCreateWithoutMedicineInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutMedicineInput | BoxContentCreateOrConnectWithoutMedicineInput[]
+    upsert?: BoxContentUpsertWithWhereUniqueWithoutMedicineInput | BoxContentUpsertWithWhereUniqueWithoutMedicineInput[]
+    createMany?: BoxContentCreateManyMedicineInputEnvelope
+    set?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    disconnect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    delete?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    update?: BoxContentUpdateWithWhereUniqueWithoutMedicineInput | BoxContentUpdateWithWhereUniqueWithoutMedicineInput[]
+    updateMany?: BoxContentUpdateManyWithWhereWithoutMedicineInput | BoxContentUpdateManyWithWhereWithoutMedicineInput[]
+    deleteMany?: BoxContentScalarWhereInput | BoxContentScalarWhereInput[]
+  }
+
   export type MedicineAssignmentUncheckedUpdateManyWithoutMedicineNestedInput = {
     create?: XOR<MedicineAssignmentCreateWithoutMedicineInput, MedicineAssignmentUncheckedCreateWithoutMedicineInput> | MedicineAssignmentCreateWithoutMedicineInput[] | MedicineAssignmentUncheckedCreateWithoutMedicineInput[]
     connectOrCreate?: MedicineAssignmentCreateOrConnectWithoutMedicineInput | MedicineAssignmentCreateOrConnectWithoutMedicineInput[]
@@ -13973,6 +15655,20 @@ export namespace Prisma {
     update?: MedicineAssignmentUpdateWithWhereUniqueWithoutMedicineInput | MedicineAssignmentUpdateWithWhereUniqueWithoutMedicineInput[]
     updateMany?: MedicineAssignmentUpdateManyWithWhereWithoutMedicineInput | MedicineAssignmentUpdateManyWithWhereWithoutMedicineInput[]
     deleteMany?: MedicineAssignmentScalarWhereInput | MedicineAssignmentScalarWhereInput[]
+  }
+
+  export type BoxContentUncheckedUpdateManyWithoutMedicineNestedInput = {
+    create?: XOR<BoxContentCreateWithoutMedicineInput, BoxContentUncheckedCreateWithoutMedicineInput> | BoxContentCreateWithoutMedicineInput[] | BoxContentUncheckedCreateWithoutMedicineInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutMedicineInput | BoxContentCreateOrConnectWithoutMedicineInput[]
+    upsert?: BoxContentUpsertWithWhereUniqueWithoutMedicineInput | BoxContentUpsertWithWhereUniqueWithoutMedicineInput[]
+    createMany?: BoxContentCreateManyMedicineInputEnvelope
+    set?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    disconnect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    delete?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    update?: BoxContentUpdateWithWhereUniqueWithoutMedicineInput | BoxContentUpdateWithWhereUniqueWithoutMedicineInput[]
+    updateMany?: BoxContentUpdateManyWithWhereWithoutMedicineInput | BoxContentUpdateManyWithWhereWithoutMedicineInput[]
+    deleteMany?: BoxContentScalarWhereInput | BoxContentScalarWhereInput[]
   }
 
   export type PatientCreateNestedManyWithoutBoxInput = {
@@ -13989,6 +15685,13 @@ export namespace Prisma {
     connect?: MedicineAssignmentWhereUniqueInput | MedicineAssignmentWhereUniqueInput[]
   }
 
+  export type BoxContentCreateNestedManyWithoutBoxInput = {
+    create?: XOR<BoxContentCreateWithoutBoxInput, BoxContentUncheckedCreateWithoutBoxInput> | BoxContentCreateWithoutBoxInput[] | BoxContentUncheckedCreateWithoutBoxInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutBoxInput | BoxContentCreateOrConnectWithoutBoxInput[]
+    createMany?: BoxContentCreateManyBoxInputEnvelope
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+  }
+
   export type PatientUncheckedCreateNestedManyWithoutBoxInput = {
     create?: XOR<PatientCreateWithoutBoxInput, PatientUncheckedCreateWithoutBoxInput> | PatientCreateWithoutBoxInput[] | PatientUncheckedCreateWithoutBoxInput[]
     connectOrCreate?: PatientCreateOrConnectWithoutBoxInput | PatientCreateOrConnectWithoutBoxInput[]
@@ -14001,6 +15704,13 @@ export namespace Prisma {
     connectOrCreate?: MedicineAssignmentCreateOrConnectWithoutBoxInput | MedicineAssignmentCreateOrConnectWithoutBoxInput[]
     createMany?: MedicineAssignmentCreateManyBoxInputEnvelope
     connect?: MedicineAssignmentWhereUniqueInput | MedicineAssignmentWhereUniqueInput[]
+  }
+
+  export type BoxContentUncheckedCreateNestedManyWithoutBoxInput = {
+    create?: XOR<BoxContentCreateWithoutBoxInput, BoxContentUncheckedCreateWithoutBoxInput> | BoxContentCreateWithoutBoxInput[] | BoxContentUncheckedCreateWithoutBoxInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutBoxInput | BoxContentCreateOrConnectWithoutBoxInput[]
+    createMany?: BoxContentCreateManyBoxInputEnvelope
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
   }
 
   export type EnumBoxStatusFieldUpdateOperationsInput = {
@@ -14035,6 +15745,20 @@ export namespace Prisma {
     deleteMany?: MedicineAssignmentScalarWhereInput | MedicineAssignmentScalarWhereInput[]
   }
 
+  export type BoxContentUpdateManyWithoutBoxNestedInput = {
+    create?: XOR<BoxContentCreateWithoutBoxInput, BoxContentUncheckedCreateWithoutBoxInput> | BoxContentCreateWithoutBoxInput[] | BoxContentUncheckedCreateWithoutBoxInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutBoxInput | BoxContentCreateOrConnectWithoutBoxInput[]
+    upsert?: BoxContentUpsertWithWhereUniqueWithoutBoxInput | BoxContentUpsertWithWhereUniqueWithoutBoxInput[]
+    createMany?: BoxContentCreateManyBoxInputEnvelope
+    set?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    disconnect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    delete?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    update?: BoxContentUpdateWithWhereUniqueWithoutBoxInput | BoxContentUpdateWithWhereUniqueWithoutBoxInput[]
+    updateMany?: BoxContentUpdateManyWithWhereWithoutBoxInput | BoxContentUpdateManyWithWhereWithoutBoxInput[]
+    deleteMany?: BoxContentScalarWhereInput | BoxContentScalarWhereInput[]
+  }
+
   export type PatientUncheckedUpdateManyWithoutBoxNestedInput = {
     create?: XOR<PatientCreateWithoutBoxInput, PatientUncheckedCreateWithoutBoxInput> | PatientCreateWithoutBoxInput[] | PatientUncheckedCreateWithoutBoxInput[]
     connectOrCreate?: PatientCreateOrConnectWithoutBoxInput | PatientCreateOrConnectWithoutBoxInput[]
@@ -14061,6 +15785,57 @@ export namespace Prisma {
     update?: MedicineAssignmentUpdateWithWhereUniqueWithoutBoxInput | MedicineAssignmentUpdateWithWhereUniqueWithoutBoxInput[]
     updateMany?: MedicineAssignmentUpdateManyWithWhereWithoutBoxInput | MedicineAssignmentUpdateManyWithWhereWithoutBoxInput[]
     deleteMany?: MedicineAssignmentScalarWhereInput | MedicineAssignmentScalarWhereInput[]
+  }
+
+  export type BoxContentUncheckedUpdateManyWithoutBoxNestedInput = {
+    create?: XOR<BoxContentCreateWithoutBoxInput, BoxContentUncheckedCreateWithoutBoxInput> | BoxContentCreateWithoutBoxInput[] | BoxContentUncheckedCreateWithoutBoxInput[]
+    connectOrCreate?: BoxContentCreateOrConnectWithoutBoxInput | BoxContentCreateOrConnectWithoutBoxInput[]
+    upsert?: BoxContentUpsertWithWhereUniqueWithoutBoxInput | BoxContentUpsertWithWhereUniqueWithoutBoxInput[]
+    createMany?: BoxContentCreateManyBoxInputEnvelope
+    set?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    disconnect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    delete?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    connect?: BoxContentWhereUniqueInput | BoxContentWhereUniqueInput[]
+    update?: BoxContentUpdateWithWhereUniqueWithoutBoxInput | BoxContentUpdateWithWhereUniqueWithoutBoxInput[]
+    updateMany?: BoxContentUpdateManyWithWhereWithoutBoxInput | BoxContentUpdateManyWithWhereWithoutBoxInput[]
+    deleteMany?: BoxContentScalarWhereInput | BoxContentScalarWhereInput[]
+  }
+
+  export type BoxContentCreatescheduleTimesInput = {
+    set: string[]
+  }
+
+  export type BoxCreateNestedOneWithoutContentsInput = {
+    create?: XOR<BoxCreateWithoutContentsInput, BoxUncheckedCreateWithoutContentsInput>
+    connectOrCreate?: BoxCreateOrConnectWithoutContentsInput
+    connect?: BoxWhereUniqueInput
+  }
+
+  export type MedicineCreateNestedOneWithoutBoxContentsInput = {
+    create?: XOR<MedicineCreateWithoutBoxContentsInput, MedicineUncheckedCreateWithoutBoxContentsInput>
+    connectOrCreate?: MedicineCreateOrConnectWithoutBoxContentsInput
+    connect?: MedicineWhereUniqueInput
+  }
+
+  export type BoxContentUpdatescheduleTimesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type BoxUpdateOneRequiredWithoutContentsNestedInput = {
+    create?: XOR<BoxCreateWithoutContentsInput, BoxUncheckedCreateWithoutContentsInput>
+    connectOrCreate?: BoxCreateOrConnectWithoutContentsInput
+    upsert?: BoxUpsertWithoutContentsInput
+    connect?: BoxWhereUniqueInput
+    update?: XOR<XOR<BoxUpdateToOneWithWhereWithoutContentsInput, BoxUpdateWithoutContentsInput>, BoxUncheckedUpdateWithoutContentsInput>
+  }
+
+  export type MedicineUpdateOneRequiredWithoutBoxContentsNestedInput = {
+    create?: XOR<MedicineCreateWithoutBoxContentsInput, MedicineUncheckedCreateWithoutBoxContentsInput>
+    connectOrCreate?: MedicineCreateOrConnectWithoutBoxContentsInput
+    upsert?: MedicineUpsertWithoutBoxContentsInput
+    connect?: MedicineWhereUniqueInput
+    update?: XOR<XOR<MedicineUpdateToOneWithWhereWithoutBoxContentsInput, MedicineUpdateWithoutBoxContentsInput>, MedicineUncheckedUpdateWithoutBoxContentsInput>
   }
 
   export type MedicineAssignmentCreatescheduleTimesInput = {
@@ -14182,10 +15957,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutAdministrationLogsInput, UserUncheckedCreateWithoutAdministrationLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAdministrationLogsInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type EnumAdministrationStatusFieldUpdateOperationsInput = {
@@ -14389,6 +16160,28 @@ export namespace Prisma {
     not?: NestedEnumPatientStatusFilter<$PrismaModel> | $Enums.PatientStatus
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumGenderWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
@@ -14416,17 +16209,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedEnumPatientStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.PatientStatus | EnumPatientStatusFieldRefInput<$PrismaModel>
     in?: $Enums.PatientStatus[] | ListEnumPatientStatusFieldRefInput<$PrismaModel>
@@ -14435,6 +16217,47 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPatientStatusFilter<$PrismaModel>
     _max?: NestedEnumPatientStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumMedicineTypeFilter<$PrismaModel = never> = {
@@ -14501,36 +16324,11 @@ export namespace Prisma {
     _max?: NestedEnumAssignmentStatusFilter<$PrismaModel>
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedEnumAdministrationStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AdministrationStatus | EnumAdministrationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AdministrationStatus[] | ListEnumAdministrationStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.AdministrationStatus[] | ListEnumAdministrationStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumAdministrationStatusFilter<$PrismaModel> | $Enums.AdministrationStatus
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumAdministrationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -14650,6 +16448,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     box?: BoxCreateNestedOneWithoutPatientsInput
@@ -14668,6 +16469,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes?: string | null
     boxId?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutPatientInput
@@ -14744,6 +16548,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFilter<"Patient"> | $Enums.PatientStatus
     notes?: StringNullableFilter<"Patient"> | string | null
     boxId?: StringNullableFilter<"Patient"> | string | null
+    boxStartDate?: DateTimeNullableFilter<"Patient"> | Date | string | null
+    boxEndDate?: DateTimeNullableFilter<"Patient"> | Date | string | null
+    boxDurationDays?: IntNullableFilter<"Patient"> | number | null
     createdAt?: DateTimeFilter<"Patient"> | Date | string
     updatedAt?: DateTimeFilter<"Patient"> | Date | string
   }
@@ -14844,6 +16651,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentCreateNestedManyWithoutBoxInput
+    contents?: BoxContentCreateNestedManyWithoutBoxInput
   }
 
   export type BoxUncheckedCreateWithoutPatientsInput = {
@@ -14855,6 +16663,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutBoxInput
+    contents?: BoxContentUncheckedCreateNestedManyWithoutBoxInput
   }
 
   export type BoxCreateOrConnectWithoutPatientsInput = {
@@ -14997,6 +16806,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUpdateManyWithoutBoxNestedInput
+    contents?: BoxContentUpdateManyWithoutBoxNestedInput
   }
 
   export type BoxUncheckedUpdateWithoutPatientsInput = {
@@ -15008,6 +16818,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutBoxNestedInput
+    contents?: BoxContentUncheckedUpdateManyWithoutBoxNestedInput
   }
 
   export type MedicineAssignmentUpsertWithWhereUniqueWithoutPatientInput = {
@@ -15109,6 +16920,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BoxContentCreateWithoutMedicineInput = {
+    id?: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    box: BoxCreateNestedOneWithoutContentsInput
+  }
+
+  export type BoxContentUncheckedCreateWithoutMedicineInput = {
+    id?: string
+    boxId: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BoxContentCreateOrConnectWithoutMedicineInput = {
+    where: BoxContentWhereUniqueInput
+    create: XOR<BoxContentCreateWithoutMedicineInput, BoxContentUncheckedCreateWithoutMedicineInput>
+  }
+
+  export type BoxContentCreateManyMedicineInputEnvelope = {
+    data: BoxContentCreateManyMedicineInput | BoxContentCreateManyMedicineInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MedicineAssignmentUpsertWithWhereUniqueWithoutMedicineInput = {
     where: MedicineAssignmentWhereUniqueInput
     update: XOR<MedicineAssignmentUpdateWithoutMedicineInput, MedicineAssignmentUncheckedUpdateWithoutMedicineInput>
@@ -15125,6 +16968,37 @@ export namespace Prisma {
     data: XOR<MedicineAssignmentUpdateManyMutationInput, MedicineAssignmentUncheckedUpdateManyWithoutMedicineInput>
   }
 
+  export type BoxContentUpsertWithWhereUniqueWithoutMedicineInput = {
+    where: BoxContentWhereUniqueInput
+    update: XOR<BoxContentUpdateWithoutMedicineInput, BoxContentUncheckedUpdateWithoutMedicineInput>
+    create: XOR<BoxContentCreateWithoutMedicineInput, BoxContentUncheckedCreateWithoutMedicineInput>
+  }
+
+  export type BoxContentUpdateWithWhereUniqueWithoutMedicineInput = {
+    where: BoxContentWhereUniqueInput
+    data: XOR<BoxContentUpdateWithoutMedicineInput, BoxContentUncheckedUpdateWithoutMedicineInput>
+  }
+
+  export type BoxContentUpdateManyWithWhereWithoutMedicineInput = {
+    where: BoxContentScalarWhereInput
+    data: XOR<BoxContentUpdateManyMutationInput, BoxContentUncheckedUpdateManyWithoutMedicineInput>
+  }
+
+  export type BoxContentScalarWhereInput = {
+    AND?: BoxContentScalarWhereInput | BoxContentScalarWhereInput[]
+    OR?: BoxContentScalarWhereInput[]
+    NOT?: BoxContentScalarWhereInput | BoxContentScalarWhereInput[]
+    id?: StringFilter<"BoxContent"> | string
+    boxId?: StringFilter<"BoxContent"> | string
+    medicineId?: StringFilter<"BoxContent"> | string
+    dosage?: StringNullableFilter<"BoxContent"> | string | null
+    administrationMethod?: StringNullableFilter<"BoxContent"> | string | null
+    scheduleTimes?: StringNullableListFilter<"BoxContent">
+    notes?: StringNullableFilter<"BoxContent"> | string | null
+    createdAt?: DateTimeFilter<"BoxContent"> | Date | string
+    updatedAt?: DateTimeFilter<"BoxContent"> | Date | string
+  }
+
   export type PatientCreateWithoutBoxInput = {
     id?: string
     name: string
@@ -15135,6 +17009,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     department?: DepartmentCreateNestedOneWithoutPatientsInput
@@ -15153,6 +17030,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutPatientInput
@@ -15215,6 +17095,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BoxContentCreateWithoutBoxInput = {
+    id?: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    medicine: MedicineCreateNestedOneWithoutBoxContentsInput
+  }
+
+  export type BoxContentUncheckedCreateWithoutBoxInput = {
+    id?: string
+    medicineId: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BoxContentCreateOrConnectWithoutBoxInput = {
+    where: BoxContentWhereUniqueInput
+    create: XOR<BoxContentCreateWithoutBoxInput, BoxContentUncheckedCreateWithoutBoxInput>
+  }
+
+  export type BoxContentCreateManyBoxInputEnvelope = {
+    data: BoxContentCreateManyBoxInput | BoxContentCreateManyBoxInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PatientUpsertWithWhereUniqueWithoutBoxInput = {
     where: PatientWhereUniqueInput
     update: XOR<PatientUpdateWithoutBoxInput, PatientUncheckedUpdateWithoutBoxInput>
@@ -15247,6 +17159,150 @@ export namespace Prisma {
     data: XOR<MedicineAssignmentUpdateManyMutationInput, MedicineAssignmentUncheckedUpdateManyWithoutBoxInput>
   }
 
+  export type BoxContentUpsertWithWhereUniqueWithoutBoxInput = {
+    where: BoxContentWhereUniqueInput
+    update: XOR<BoxContentUpdateWithoutBoxInput, BoxContentUncheckedUpdateWithoutBoxInput>
+    create: XOR<BoxContentCreateWithoutBoxInput, BoxContentUncheckedCreateWithoutBoxInput>
+  }
+
+  export type BoxContentUpdateWithWhereUniqueWithoutBoxInput = {
+    where: BoxContentWhereUniqueInput
+    data: XOR<BoxContentUpdateWithoutBoxInput, BoxContentUncheckedUpdateWithoutBoxInput>
+  }
+
+  export type BoxContentUpdateManyWithWhereWithoutBoxInput = {
+    where: BoxContentScalarWhereInput
+    data: XOR<BoxContentUpdateManyMutationInput, BoxContentUncheckedUpdateManyWithoutBoxInput>
+  }
+
+  export type BoxCreateWithoutContentsInput = {
+    id?: string
+    boxLabel: string
+    location?: string | null
+    status: $Enums.BoxStatus
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    patients?: PatientCreateNestedManyWithoutBoxInput
+    medicineAssignments?: MedicineAssignmentCreateNestedManyWithoutBoxInput
+  }
+
+  export type BoxUncheckedCreateWithoutContentsInput = {
+    id?: string
+    boxLabel: string
+    location?: string | null
+    status: $Enums.BoxStatus
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    patients?: PatientUncheckedCreateNestedManyWithoutBoxInput
+    medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutBoxInput
+  }
+
+  export type BoxCreateOrConnectWithoutContentsInput = {
+    where: BoxWhereUniqueInput
+    create: XOR<BoxCreateWithoutContentsInput, BoxUncheckedCreateWithoutContentsInput>
+  }
+
+  export type MedicineCreateWithoutBoxContentsInput = {
+    id?: string
+    name: string
+    type: $Enums.MedicineType
+    administrationMethod?: string | null
+    defaultDosage?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    medicineAssignments?: MedicineAssignmentCreateNestedManyWithoutMedicineInput
+  }
+
+  export type MedicineUncheckedCreateWithoutBoxContentsInput = {
+    id?: string
+    name: string
+    type: $Enums.MedicineType
+    administrationMethod?: string | null
+    defaultDosage?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutMedicineInput
+  }
+
+  export type MedicineCreateOrConnectWithoutBoxContentsInput = {
+    where: MedicineWhereUniqueInput
+    create: XOR<MedicineCreateWithoutBoxContentsInput, MedicineUncheckedCreateWithoutBoxContentsInput>
+  }
+
+  export type BoxUpsertWithoutContentsInput = {
+    update: XOR<BoxUpdateWithoutContentsInput, BoxUncheckedUpdateWithoutContentsInput>
+    create: XOR<BoxCreateWithoutContentsInput, BoxUncheckedCreateWithoutContentsInput>
+    where?: BoxWhereInput
+  }
+
+  export type BoxUpdateToOneWithWhereWithoutContentsInput = {
+    where?: BoxWhereInput
+    data: XOR<BoxUpdateWithoutContentsInput, BoxUncheckedUpdateWithoutContentsInput>
+  }
+
+  export type BoxUpdateWithoutContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boxLabel?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBoxStatusFieldUpdateOperationsInput | $Enums.BoxStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    patients?: PatientUpdateManyWithoutBoxNestedInput
+    medicineAssignments?: MedicineAssignmentUpdateManyWithoutBoxNestedInput
+  }
+
+  export type BoxUncheckedUpdateWithoutContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boxLabel?: StringFieldUpdateOperationsInput | string
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBoxStatusFieldUpdateOperationsInput | $Enums.BoxStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    patients?: PatientUncheckedUpdateManyWithoutBoxNestedInput
+    medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutBoxNestedInput
+  }
+
+  export type MedicineUpsertWithoutBoxContentsInput = {
+    update: XOR<MedicineUpdateWithoutBoxContentsInput, MedicineUncheckedUpdateWithoutBoxContentsInput>
+    create: XOR<MedicineCreateWithoutBoxContentsInput, MedicineUncheckedCreateWithoutBoxContentsInput>
+    where?: MedicineWhereInput
+  }
+
+  export type MedicineUpdateToOneWithWhereWithoutBoxContentsInput = {
+    where?: MedicineWhereInput
+    data: XOR<MedicineUpdateWithoutBoxContentsInput, MedicineUncheckedUpdateWithoutBoxContentsInput>
+  }
+
+  export type MedicineUpdateWithoutBoxContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumMedicineTypeFieldUpdateOperationsInput | $Enums.MedicineType
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultDosage?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    medicineAssignments?: MedicineAssignmentUpdateManyWithoutMedicineNestedInput
+  }
+
+  export type MedicineUncheckedUpdateWithoutBoxContentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumMedicineTypeFieldUpdateOperationsInput | $Enums.MedicineType
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultDosage?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutMedicineNestedInput
+  }
+
   export type PatientCreateWithoutMedicineAssignmentsInput = {
     id?: string
     name: string
@@ -15257,6 +17313,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     department?: DepartmentCreateNestedOneWithoutPatientsInput
@@ -15276,6 +17335,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes?: string | null
     boxId?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     administrationLogs?: AdministrationLogUncheckedCreateNestedManyWithoutPatientInput
@@ -15295,6 +17357,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     patients?: PatientCreateNestedManyWithoutBoxInput
+    contents?: BoxContentCreateNestedManyWithoutBoxInput
   }
 
   export type BoxUncheckedCreateWithoutMedicineAssignmentsInput = {
@@ -15306,6 +17369,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     patients?: PatientUncheckedCreateNestedManyWithoutBoxInput
+    contents?: BoxContentUncheckedCreateNestedManyWithoutBoxInput
   }
 
   export type BoxCreateOrConnectWithoutMedicineAssignmentsInput = {
@@ -15322,6 +17386,7 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    boxContents?: BoxContentCreateNestedManyWithoutMedicineInput
   }
 
   export type MedicineUncheckedCreateWithoutMedicineAssignmentsInput = {
@@ -15333,6 +17398,7 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    boxContents?: BoxContentUncheckedCreateNestedManyWithoutMedicineInput
   }
 
   export type MedicineCreateOrConnectWithoutMedicineAssignmentsInput = {
@@ -15397,6 +17463,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneWithoutPatientsNestedInput
@@ -15416,6 +17485,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     boxId?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     administrationLogs?: AdministrationLogUncheckedUpdateManyWithoutPatientNestedInput
@@ -15441,6 +17513,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     patients?: PatientUpdateManyWithoutBoxNestedInput
+    contents?: BoxContentUpdateManyWithoutBoxNestedInput
   }
 
   export type BoxUncheckedUpdateWithoutMedicineAssignmentsInput = {
@@ -15452,6 +17525,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     patients?: PatientUncheckedUpdateManyWithoutBoxNestedInput
+    contents?: BoxContentUncheckedUpdateManyWithoutBoxNestedInput
   }
 
   export type MedicineUpsertWithoutMedicineAssignmentsInput = {
@@ -15474,6 +17548,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    boxContents?: BoxContentUpdateManyWithoutMedicineNestedInput
   }
 
   export type MedicineUncheckedUpdateWithoutMedicineAssignmentsInput = {
@@ -15485,6 +17560,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    boxContents?: BoxContentUncheckedUpdateManyWithoutMedicineNestedInput
   }
 
   export type AdministrationLogUpsertWithWhereUniqueWithoutAssignmentInput = {
@@ -15554,6 +17630,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     department?: DepartmentCreateNestedOneWithoutPatientsInput
@@ -15573,6 +17652,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes?: string | null
     boxId?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     medicineAssignments?: MedicineAssignmentUncheckedCreateNestedManyWithoutPatientInput
@@ -15676,6 +17758,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneWithoutPatientsNestedInput
@@ -15695,6 +17780,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     boxId?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutPatientNestedInput
@@ -15803,6 +17891,9 @@ export namespace Prisma {
     status: $Enums.PatientStatus
     notes?: string | null
     boxId?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15844,6 +17935,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     box?: BoxUpdateOneWithoutPatientsNestedInput
@@ -15862,6 +17956,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     boxId?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutPatientNestedInput
@@ -15879,6 +17976,9 @@ export namespace Prisma {
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     boxId?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16022,6 +18122,17 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type BoxContentCreateManyMedicineInput = {
+    id?: string
+    boxId: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type MedicineAssignmentUpdateWithoutMedicineInput = {
     id?: StringFieldUpdateOperationsInput | string
     dosage?: StringFieldUpdateOperationsInput | string
@@ -16075,6 +18186,39 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BoxContentUpdateWithoutMedicineInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    box?: BoxUpdateOneRequiredWithoutContentsNestedInput
+  }
+
+  export type BoxContentUncheckedUpdateWithoutMedicineInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boxId?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoxContentUncheckedUpdateManyWithoutMedicineInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    boxId?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PatientCreateManyBoxInput = {
     id?: string
     name: string
@@ -16086,6 +18230,9 @@ export namespace Prisma {
     allergies?: PatientCreateallergiesInput | string[]
     status: $Enums.PatientStatus
     notes?: string | null
+    boxStartDate?: Date | string | null
+    boxEndDate?: Date | string | null
+    boxDurationDays?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16107,6 +18254,17 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type BoxContentCreateManyBoxInput = {
+    id?: string
+    medicineId: string
+    dosage?: string | null
+    administrationMethod?: string | null
+    scheduleTimes?: BoxContentCreatescheduleTimesInput | string[]
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type PatientUpdateWithoutBoxInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -16117,6 +18275,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneWithoutPatientsNestedInput
@@ -16135,6 +18296,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     medicineAssignments?: MedicineAssignmentUncheckedUpdateManyWithoutPatientNestedInput
@@ -16152,6 +18316,9 @@ export namespace Prisma {
     allergies?: PatientUpdateallergiesInput | string[]
     status?: EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    boxStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    boxDurationDays?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16204,6 +18371,39 @@ export namespace Prisma {
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
     repeat?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoxContentUpdateWithoutBoxInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    medicine?: MedicineUpdateOneRequiredWithoutBoxContentsNestedInput
+  }
+
+  export type BoxContentUncheckedUpdateWithoutBoxInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    medicineId?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoxContentUncheckedUpdateManyWithoutBoxInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    medicineId?: StringFieldUpdateOperationsInput | string
+    dosage?: NullableStringFieldUpdateOperationsInput | string | null
+    administrationMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduleTimes?: BoxContentUpdatescheduleTimesInput | string[]
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

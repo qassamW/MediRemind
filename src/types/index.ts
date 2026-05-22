@@ -53,6 +53,7 @@ import type {
     status: ScheduleItemStatus;
     logId: string | null;
     skipReason: string | null;
+    boxLabel: string | null;
   };
   
   export type DashboardStats = {

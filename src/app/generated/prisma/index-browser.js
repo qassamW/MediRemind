@@ -162,6 +162,9 @@ exports.Prisma.PatientScalarFieldEnum = {
   status: 'status',
   notes: 'notes',
   boxId: 'boxId',
+  boxStartDate: 'boxStartDate',
+  boxEndDate: 'boxEndDate',
+  boxDurationDays: 'boxDurationDays',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -182,6 +185,18 @@ exports.Prisma.BoxScalarFieldEnum = {
   boxLabel: 'boxLabel',
   location: 'location',
   status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BoxContentScalarFieldEnum = {
+  id: 'id',
+  boxId: 'boxId',
+  medicineId: 'medicineId',
+  dosage: 'dosage',
+  administrationMethod: 'administrationMethod',
+  scheduleTimes: 'scheduleTimes',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -296,6 +311,7 @@ exports.Prisma.ModelName = {
   Patient: 'Patient',
   Medicine: 'Medicine',
   Box: 'Box',
+  BoxContent: 'BoxContent',
   MedicineAssignment: 'MedicineAssignment',
   AdministrationLog: 'AdministrationLog'
 };

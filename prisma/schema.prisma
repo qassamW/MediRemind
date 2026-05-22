@@ -115,6 +115,9 @@ model Patient {
   status              PatientStatus
   notes               String?
   boxId               String?
+  boxStartDate        DateTime?
+  boxEndDate          DateTime?
+  boxDurationDays     Int?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   department          Department?          @relation(fields: [departmentId], references: [id])
@@ -133,6 +136,7 @@ model Medicine {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   medicineAssignments MedicineAssignment[]
+  boxContents         BoxContent[]
 }
 
 model Box {
@@ -145,6 +149,21 @@ model Box {
   updatedAt           DateTime             @updatedAt
   patients            Patient[]
   medicineAssignments MedicineAssignment[]
+  contents            BoxContent[]
+}
+
+model BoxContent {
+  id                   String   @id @default(cuid())
+  boxId                String
+  medicineId           String
+  dosage               String?
+  administrationMethod String?
+  scheduleTimes        String[]
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  box                  Box      @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  medicine             Medicine @relation(fields: [medicineId], references: [id])
 }
 
 model MedicineAssignment {

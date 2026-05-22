@@ -217,7 +217,7 @@ async function main() {
   // ── 7. Medicine Assignments ───────────────────────────────────────
   const assignment1 = await prisma.medicineAssignment.upsert({
     where: { id: "assign-khalid-metoprolol" },
-    update: {},
+    update: { startDate: daysAgo(5), durationDays: 30, endDate: daysFromNow(25) },
     create: {
       id: "assign-khalid-metoprolol",
       patientId: khalid.id,
@@ -236,7 +236,7 @@ async function main() {
 
   const assignment2 = await prisma.medicineAssignment.upsert({
     where: { id: "assign-khalid-heparin" },
-    update: {},
+    update: { startDate: daysAgo(2), durationDays: 7, endDate: daysFromNow(5) },
     create: {
       id: "assign-khalid-heparin",
       patientId: khalid.id,
@@ -255,7 +255,7 @@ async function main() {
 
   const assignment3 = await prisma.medicineAssignment.upsert({
     where: { id: "assign-layla-amoxicillin" },
-    update: {},
+    update: { startDate: daysAgo(1), durationDays: 10, endDate: daysFromNow(9) },
     create: {
       id: "assign-layla-amoxicillin",
       patientId: layla.id,
@@ -274,7 +274,7 @@ async function main() {
 
   const assignment4 = await prisma.medicineAssignment.upsert({
     where: { id: "assign-omar-ibuprofen" },
-    update: {},
+    update: { startDate: daysAgo(0), durationDays: 5, endDate: daysFromNow(5) },
     create: {
       id: "assign-omar-ibuprofen",
       patientId: omar.id,

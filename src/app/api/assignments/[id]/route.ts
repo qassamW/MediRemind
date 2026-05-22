@@ -44,6 +44,7 @@ export async function PUT(
     const body = await request.json()
     const {
       status,
+      boxId,
       dosage,
       administrationMethodOverride,
       scheduleTimes,
@@ -55,6 +56,7 @@ export async function PUT(
 
     const data: Record<string, unknown> = {}
     if (status !== undefined) data.status = status as AssignmentStatus
+    if (boxId !== undefined) data.boxId = boxId ?? null
     if (dosage !== undefined) data.dosage = dosage
     if (administrationMethodOverride !== undefined) data.administrationMethodOverride = administrationMethodOverride
     if (scheduleTimes !== undefined) data.scheduleTimes = scheduleTimes

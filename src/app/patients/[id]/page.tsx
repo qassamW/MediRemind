@@ -40,6 +40,9 @@ type Patient = {
   notes: string | null
   department: { id: string; name: string } | null
   box: { id: string; boxLabel: string } | null
+  boxStartDate: string | null
+  boxEndDate: string | null
+  boxDurationDays: number | null
   medicineAssignments: Assignment[]
 }
 
@@ -58,7 +61,7 @@ type ModalForm = {
 
 const GENDER_LABEL: Record<string, string> = { MALE: 'Male', FEMALE: 'Female', OTHER: 'Other' }
 
-const MODAL_DEFAULT: ModalForm = {
+const makeModalDefault = (): ModalForm => ({
   medicineId: '',
   dosage: '',
   useBox: false,
@@ -69,7 +72,7 @@ const MODAL_DEFAULT: ModalForm = {
   durationDays: '',
   repeat: false,
   notes: '',
-}
+})
 
 // ─── Add Medicine Modal ───────────────────────────────────────────────────────
 
@@ -83,7 +86,7 @@ function AddMedicineModal({
   onSaved: () => void
 }) {
   const [medicines, setMedicines] = useState<Medicine[]>([])
-  const [form, setForm] = useState<ModalForm>(MODAL_DEFAULT)
+  const [form, setForm] = useState<ModalForm>(makeModalDefault)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -398,6 +401,34 @@ export default function PatientPage({
   const [notFound, setNotFound] = useState(false)
   const [togglingStatus, setTogglingStatus] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [availableBoxes, setAvailableBoxes] = useState<{ id: string; boxLabel: string }[]>([])
+  const [showBoxForm, setShowBoxForm] = useState(false)
+  const [boxForm, setBoxForm] = useState({
+    boxId: '',
+    scheduleTimeInput: '',
+    scheduleTimes: [] as string[],
+    startDate: new Date().toISOString().slice(0, 10),
+    durationDays: '',
+    repeat: false,
+    notes: '',
+  })
+  const [savingBox, setSavingBox] = useState(false)
+  const [editingAssignmentId, setEditingAssignmentId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState({
+    dosage: '', administrationMethod: '', scheduleTimeInput: '',
+    scheduleTimes: [] as string[], startDate: '', durationDays: '',
+    repeat: false, notes: '',
+  })
+  const [editSaving, setEditSaving] = useState(false)
+  const [editError, setEditError] = useState('')
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/boxes')
+      .then(r => r.json())
+      .then(data => setAvailableBoxes(Array.isArray(data) ? data.map((b: { id: string; boxLabel: string }) => ({ id: b.id, boxLabel: b.boxLabel })) : []))
+      .catch(() => {})
+  }, [])
 
   const load = useCallback(() => {
     setLoading(true)
@@ -412,6 +443,104 @@ export default function PatientPage({
   }, [id])
 
   useEffect(() => { load() }, [load])
+
+  async function assignBox() {
+    if (!boxForm.boxId || !boxForm.startDate || !boxForm.durationDays || boxForm.scheduleTimes.length === 0) return
+    setSavingBox(true)
+    try {
+      const res = await fetch(`/api/patients/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          boxId: boxForm.boxId,
+          boxStartDate: boxForm.startDate,
+          boxDurationDays: Number(boxForm.durationDays),
+          boxScheduleTimes: boxForm.scheduleTimes,
+          boxRepeat: boxForm.repeat,
+        }),
+      })
+      if (res.ok) { setPatient(await res.json()); setShowBoxForm(false) }
+    } finally { setSavingBox(false) }
+  }
+
+  async function removeBox() {
+    if (!window.confirm('Remove this box from the patient?')) return
+    setSavingBox(true)
+    try {
+      const res = await fetch(`/api/patients/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ boxId: null }),
+      })
+      if (res.ok) setPatient(await res.json())
+    } finally { setSavingBox(false) }
+  }
+
+  function startEdit(a: Assignment) {
+    setEditingAssignmentId(a.id)
+    setEditForm({
+      dosage: a.dosage,
+      administrationMethod: a.administrationMethodOverride ?? '',
+      scheduleTimeInput: '',
+      scheduleTimes: [...a.scheduleTimes],
+      startDate: new Date(a.startDate).toISOString().slice(0, 10),
+      durationDays: String(a.durationDays),
+      repeat: a.repeat,
+      notes: a.notes ?? '',
+    })
+    setEditError('')
+  }
+
+  function addEditTime() {
+    const val = editForm.scheduleTimeInput.trim()
+    if (val && !editForm.scheduleTimes.includes(val)) {
+      setEditForm(prev => ({ ...prev, scheduleTimes: [...prev.scheduleTimes, val], scheduleTimeInput: '' }))
+    } else {
+      setEditForm(prev => ({ ...prev, scheduleTimeInput: '' }))
+    }
+  }
+
+  function removeEditTime(t: string) {
+    setEditForm(prev => ({ ...prev, scheduleTimes: prev.scheduleTimes.filter(x => x !== t) }))
+  }
+
+  async function saveAssignment(assignmentId: string) {
+    setEditSaving(true)
+    setEditError('')
+    try {
+      const res = await fetch(`/api/assignments/${assignmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dosage: editForm.dosage.trim(),
+          administrationMethodOverride: editForm.administrationMethod.trim() || null,
+          scheduleTimes: editForm.scheduleTimes,
+          startDate: new Date(editForm.startDate).toISOString(),
+          durationDays: Number(editForm.durationDays),
+          repeat: editForm.repeat,
+          notes: editForm.notes.trim() || null,
+        }),
+      })
+      if (!res.ok) { setEditError('Failed to save'); return }
+      setEditingAssignmentId(null)
+      load()
+    } catch {
+      setEditError('Something went wrong')
+    } finally {
+      setEditSaving(false)
+    }
+  }
+
+  async function cancelAssignment(assignmentId: string) {
+    if (!window.confirm('Remove this medicine from the patient\'s plan?')) return
+    setCancellingId(assignmentId)
+    try {
+      const res = await fetch(`/api/assignments/${assignmentId}`, { method: 'DELETE' })
+      if (res.ok) load()
+    } finally {
+      setCancellingId(null)
+    }
+  }
 
   async function toggleStatus() {
     if (!patient) return
@@ -529,6 +658,7 @@ export default function PatientPage({
               </button>
             </div>
           </div>
+
         </div>
 
         {/* Allergy alert */}
@@ -550,6 +680,131 @@ export default function PatientPage({
           </div>
         )}
 
+        {/* Assigned box */}
+        <div className="bg-white rounded-xl border border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <h2 className="text-base font-semibold text-gray-900">Assigned box</h2>
+            {!patient.box && !showBoxForm && (
+              <button
+                onClick={() => setShowBoxForm(true)}
+                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                Assign box
+              </button>
+            )}
+          </div>
+
+          {/* Assign box form */}
+          {showBoxForm && (
+            <div className="px-6 py-4 border-b border-gray-100 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Box <span className="text-red-500">*</span></label>
+                  <select
+                    value={boxForm.boxId}
+                    onChange={e => setBoxForm(p => ({ ...p, boxId: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">Select box</option>
+                    {availableBoxes.map(b => <option key={b.id} value={b.id}>{b.boxLabel}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Start date <span className="text-red-500">*</span></label>
+                  <input type="date" value={boxForm.startDate}
+                    onChange={e => setBoxForm(p => ({ ...p, startDate: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Duration (days) <span className="text-red-500">*</span></label>
+                  <input type="number" min={1} value={boxForm.durationDays}
+                    onChange={e => setBoxForm(p => ({ ...p, durationDays: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div className="flex items-end pb-1.5">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 select-none">
+                    <input type="checkbox" checked={boxForm.repeat}
+                      onChange={e => setBoxForm(p => ({ ...p, repeat: e.target.checked }))} className="rounded" />
+                    Repeat
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Schedule times <span className="text-red-500">*</span></label>
+                <div className="flex gap-2">
+                  <input type="time" value={boxForm.scheduleTimeInput}
+                    onChange={e => setBoxForm(p => ({ ...p, scheduleTimeInput: e.target.value }))}
+                    className="flex-1 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <button type="button"
+                    onClick={() => {
+                      const val = boxForm.scheduleTimeInput.trim()
+                      if (val && !boxForm.scheduleTimes.includes(val))
+                        setBoxForm(p => ({ ...p, scheduleTimes: [...p.scheduleTimes, val], scheduleTimeInput: '' }))
+                      else setBoxForm(p => ({ ...p, scheduleTimeInput: '' }))
+                    }}
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >Add</button>
+                </div>
+                {boxForm.scheduleTimes.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {boxForm.scheduleTimes.map(t => (
+                      <span key={t} className="flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium">
+                        {t}
+                        <button onClick={() => setBoxForm(p => ({ ...p, scheduleTimes: p.scheduleTimes.filter(x => x !== t) }))}
+                          className="text-blue-400 hover:text-blue-700 leading-none">&times;</button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={assignBox}
+                  disabled={!boxForm.boxId || !boxForm.durationDays || boxForm.scheduleTimes.length === 0 || savingBox}
+                  className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {savingBox ? 'Saving…' : 'Assign'}
+                </button>
+                <button onClick={() => setShowBoxForm(false)} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+              </div>
+            </div>
+          )}
+
+          {patient.box ? (
+            <div className="px-6 py-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{patient.box.boxLabel}</p>
+                  {patient.boxStartDate && patient.boxEndDate && (
+                    <p className="text-sm text-gray-600 mt-0.5">
+                      {new Date(patient.boxStartDate).toLocaleDateString()} – {new Date(patient.boxEndDate).toLocaleDateString()}
+                      {patient.boxDurationDays && <span className="text-gray-400 ml-1">({patient.boxDurationDays} days)</span>}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-3 shrink-0 ml-4">
+                  <button
+                    onClick={() => { setBoxForm({ boxId: patient.box!.id, scheduleTimeInput: '', scheduleTimes: [], startDate: new Date().toISOString().slice(0, 10), durationDays: '', repeat: false, notes: '' }); setShowBoxForm(true) }}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Change
+                  </button>
+                  <button
+                    onClick={removeBox}
+                    disabled={savingBox}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium disabled:opacity-50"
+                  >
+                    {savingBox ? 'Removing…' : 'Remove'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : !showBoxForm ? (
+            <p className="px-6 py-10 text-center text-sm text-gray-400">No box assigned</p>
+          ) : null}
+        </div>
+
         {/* Assigned medicines */}
         <div className="bg-white rounded-xl border border-gray-200">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -570,36 +825,164 @@ export default function PatientPage({
             <ul className="divide-y divide-gray-100">
               {activeAssignments.map(a => (
                 <li key={a.id} className="px-6 py-4">
-                  <div className="flex items-start justify-between">
-                    <div>
+                  {editingAssignmentId === a.id ? (
+                    // ── Inline edit form ───────────────────────────────
+                    <div className="space-y-3">
                       <p className="text-sm font-semibold text-gray-900">{a.medicine.name}</p>
-                      <p className="text-sm text-gray-600 mt-0.5">
-                        {a.dosage} · {a.administrationMethodOverride}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {a.scheduleTimes.map(t => (
-                          <span
-                            key={t}
-                            className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium"
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Dosage</label>
+                          <input
+                            type="text"
+                            value={editForm.dosage}
+                            onChange={e => setEditForm(p => ({ ...p, dosage: e.target.value }))}
+                            className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Duration (days)</label>
+                          <input
+                            type="number"
+                            min={1}
+                            value={editForm.durationDays}
+                            onChange={e => setEditForm(p => ({ ...p, durationDays: e.target.value }))}
+                            className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Administration method</label>
+                        <textarea
+                          value={editForm.administrationMethod}
+                          onChange={e => setEditForm(p => ({ ...p, administrationMethod: e.target.value }))}
+                          rows={2}
+                          className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Schedule times</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="time"
+                            value={editForm.scheduleTimeInput}
+                            onChange={e => setEditForm(p => ({ ...p, scheduleTimeInput: e.target.value }))}
+                            className="flex-1 px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={addEditTime}
+                            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                           >
-                            {t}
-                          </span>
-                        ))}
+                            Add
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {editForm.scheduleTimes.map(t => (
+                            <span key={t} className="flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium">
+                              {t}
+                              <button onClick={() => removeEditTime(t)} className="text-blue-400 hover:text-blue-700 leading-none">&times;</button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Start date</label>
+                          <input
+                            type="date"
+                            value={editForm.startDate}
+                            onChange={e => setEditForm(p => ({ ...p, startDate: e.target.value }))}
+                            className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div className="flex items-end pb-1.5">
+                          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 select-none">
+                            <input
+                              type="checkbox"
+                              checked={editForm.repeat}
+                              onChange={e => setEditForm(p => ({ ...p, repeat: e.target.checked }))}
+                              className="rounded"
+                            />
+                            Repeat
+                          </label>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+                        <input
+                          type="text"
+                          value={editForm.notes}
+                          onChange={e => setEditForm(p => ({ ...p, notes: e.target.value }))}
+                          className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+
+                      {editError && <p className="text-xs text-red-600">{editError}</p>}
+
+                      <div className="flex gap-3 pt-1">
+                        <button
+                          onClick={() => saveAssignment(a.id)}
+                          disabled={editSaving}
+                          className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                        >
+                          {editSaving ? 'Saving…' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => setEditingAssignmentId(null)}
+                          className="text-sm text-gray-500 hover:text-gray-700"
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </div>
-                    <div className="text-right text-xs text-gray-500 shrink-0 ml-4">
-                      <p>{a.durationDays} days</p>
-                      <p className="mt-0.5">
-                        {new Date(a.startDate).toLocaleDateString()} –{' '}
-                        {new Date(a.endDate).toLocaleDateString()}
-                      </p>
-                      {a.repeat && (
-                        <p className="mt-0.5 text-blue-600 font-medium">Repeating</p>
-                      )}
+                  ) : (
+                    // ── Normal view ────────────────────────────────────
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{a.medicine.name}</p>
+                        <p className="text-sm text-gray-600 mt-0.5">
+                          {a.dosage}{a.administrationMethodOverride ? ` · ${a.administrationMethodOverride}` : ''}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {a.scheduleTimes.map(t => (
+                            <span key={t} className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded font-medium">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        {a.notes && <p className="text-xs text-gray-500 mt-2 italic">{a.notes}</p>}
+                      </div>
+                      <div className="flex flex-col items-end gap-2 shrink-0 ml-4">
+                        <div className="text-right text-xs text-gray-500">
+                          <p>{a.durationDays} days</p>
+                          <p className="mt-0.5">
+                            {new Date(a.startDate).toLocaleDateString()} –{' '}
+                            {new Date(a.endDate).toLocaleDateString()}
+                          </p>
+                          {a.repeat && <p className="mt-0.5 text-blue-600 font-medium">Repeating</p>}
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => startEdit(a)}
+                            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => cancelAssignment(a.id)}
+                            disabled={cancellingId === a.id}
+                            className="text-xs text-red-500 hover:text-red-700 font-medium disabled:opacity-50"
+                          >
+                            {cancellingId === a.id ? 'Removing…' : 'Remove'}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  {a.notes && (
-                    <p className="text-xs text-gray-500 mt-2 italic">{a.notes}</p>
                   )}
                 </li>
               ))}
