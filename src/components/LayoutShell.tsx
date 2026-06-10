@@ -11,11 +11,13 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <aside className="w-60 shrink-0 border-r border-gray-200 bg-white overflow-y-auto">
+    <div className="flex h-full overflow-hidden bg-[#f7fbff] text-[#061943]">
+      <aside className="w-[218px] shrink-0 border-r border-[#e8eef7] bg-white/95 overflow-y-auto shadow-[10px_0_35px_rgba(6,25,67,0.04)]">
         <Sidebar />
       </aside>
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-8">
+        <div className="mx-auto max-w-6xl">{children}</div>
+      </main>
     </div>
   )
 }

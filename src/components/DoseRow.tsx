@@ -9,23 +9,118 @@ type Props = {
   readOnly?: boolean
 }
 
+type LogStatus = 'GIVEN' | 'SKIPPED' | 'DELAYED'
+
+const STATUS_META: Record<
+  ScheduleItemStatus,
+  { label: string; tone: string; rail: string; wash: string }
+> = {
+  pending: {
+    label: 'Pending',
+    tone: 'text-[#64748b] bg-[#f3f6fa] border-[#dce6f2]',
+    rail: '#109b81',
+    wash: 'from-[#e8fbf6] to-white',
+  },
+  given: {
+    label: 'Given',
+    tone: 'text-[#109b81] bg-[#ecfdf5] border-[#bfeee3]',
+    rail: '#109b81',
+    wash: 'from-[#e8fbf6] to-white',
+  },
+  skipped: {
+    label: 'Skipped',
+    tone: 'text-[#64748b] bg-[#f8fafc] border-[#d6dde8]',
+    rail: '#64748b',
+    wash: 'from-[#f2f6fb] to-white',
+  },
+  delayed: {
+    label: 'Delayed',
+    tone: 'text-[#f59e0b] bg-[#fff8ed] border-[#f8dfb4]',
+    rail: '#f59e0b',
+    wash: 'from-[#fff7e8] to-white',
+  },
+  overdue: {
+    label: 'Overdue',
+    tone: 'text-[#dc2626] bg-[#fff1f2] border-[#fecdd3]',
+    rail: '#dc2626',
+    wash: 'from-[#fff1f2] to-white',
+  },
+}
+
+function timeParts(time: string) {
+  const [rawHour = '0', minute = '00'] = time.split(':')
+  const hour = Number(rawHour)
+  const displayHour = hour % 12 || 12
+  return {
+    time: `${String(displayHour).padStart(2, '0')}:${minute}`,
+    meridiem: hour >= 12 ? 'PM' : 'AM',
+  }
+}
+
 function StatusBadge({ status }: { status: ScheduleItemStatus }) {
-  const base = 'text-xs font-semibold px-2.5 py-1 rounded-full'
-  const map: Record<ScheduleItemStatus, string> = {
-    pending: `${base} bg-gray-100 text-gray-600`,
-    given:   `${base} bg-green-100 text-green-700`,
-    skipped: `${base} bg-amber-100 text-amber-700`,
-    delayed: `${base} bg-orange-100 text-orange-700`,
-    overdue: `${base} bg-red-100 text-red-800 font-bold border border-red-300`,
+  const meta = STATUS_META[status]
+  return (
+    <span className={`rounded-lg border px-3 py-1.5 text-xs font-bold ${meta.tone}`}>
+      {meta.label}
+    </span>
+  )
+}
+
+function ActionButton({
+  label,
+  tone,
+  onClick,
+  disabled,
+}: {
+  label: string
+  tone: 'given' | 'delayed' | 'skipped'
+  onClick: () => void
+  disabled: boolean
+}) {
+  const styles = {
+    given: 'border-[#bfeee3] bg-[#effdfa] text-[#109b81] hover:bg-[#ddf8f1]',
+    delayed: 'border-[#f8dfb4] bg-[#fff8ed] text-[#f59e0b] hover:bg-[#fff1d7]',
+    skipped: 'border-[#d6dde8] bg-[#f8fafc] text-[#64748b] hover:bg-[#eef3f8]',
   }
-  const label: Record<ScheduleItemStatus, string> = {
-    pending: 'Pending',
-    given:   'Given',
-    skipped: 'Skipped',
-    delayed: 'Delayed',
-    overdue: 'Overdue',
-  }
-  return <span className={map[status]}>{label[status]}</span>
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`min-w-24 rounded-lg border px-3 py-2 text-xs font-bold transition-colors disabled:opacity-50 ${styles[tone]}`}
+    >
+      {label}
+    </button>
+  )
+}
+
+function TimeRail({
+  time,
+  status,
+  medicineCount = 1,
+}: {
+  time: string
+  status: ScheduleItemStatus
+  medicineCount?: number
+}) {
+  const parts = timeParts(time)
+  const meta = STATUS_META[status]
+
+  return (
+    <div
+      className={`flex w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-l-2xl bg-gradient-to-b px-3 py-5 text-center ${meta.wash}`}
+      style={{ color: meta.rail }}
+    >
+      <span className="flex h-7 w-7 items-center justify-center rounded-full border border-current/30 text-[10px] font-black">
+        T
+      </span>
+      <span className="text-xl font-black leading-none tabular-nums">{parts.time}</span>
+      <span className="text-xs font-black">{parts.meridiem}</span>
+      <span className="mt-1 text-[10px] font-bold opacity-60">
+        {medicineCount > 1 ? `${medicineCount} meds` : 'Dose'}
+      </span>
+    </div>
+  )
 }
 
 export default function DoseRow({ item, onUpdate, readOnly = false }: Props) {
@@ -33,10 +128,10 @@ export default function DoseRow({ item, onUpdate, readOnly = false }: Props) {
   const [skipReason, setSkipReason] = useState('')
   const [acting, setActing] = useState(false)
 
-  const isOverdue = item.status === 'overdue'
   const isActionable = item.status === 'pending' || item.status === 'overdue'
+  const meta = STATUS_META[item.status]
 
-  async function logDose(status: 'GIVEN' | 'SKIPPED', reason?: string) {
+  async function logDose(status: LogStatus, reason?: string) {
     setActing(true)
     try {
       const res = await fetch('/api/schedule/log', {
@@ -52,9 +147,11 @@ export default function DoseRow({ item, onUpdate, readOnly = false }: Props) {
       })
       if (res.ok) {
         const log = await res.json()
+        const nextStatus =
+          status === 'GIVEN' ? 'given' : status === 'DELAYED' ? 'delayed' : 'skipped'
         onUpdate?.({
           ...item,
-          status: status === 'GIVEN' ? 'given' : 'skipped',
+          status: nextStatus,
           logId: log.id,
           skipReason: reason?.trim() || null,
         })
@@ -67,103 +164,114 @@ export default function DoseRow({ item, onUpdate, readOnly = false }: Props) {
   }
 
   return (
-    <div
-      className={[
-        'flex items-start gap-4 px-4 py-3 border-b border-gray-100 last:border-0',
-        isOverdue
-          ? 'border-l-4 border-l-red-500 bg-red-50/50'
-          : 'border-l-4 border-l-transparent',
-      ].join(' ')}
-    >
-      {/* Patient + medicine info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="font-semibold text-gray-900 text-sm">{item.patientName}</span>
-          {item.room && (
-            <span className="text-xs text-gray-400 font-medium">Room {item.room}</span>
-          )}
-        </div>
+    <div className="flex overflow-hidden rounded-2xl border border-[#e7eef7] bg-white shadow-[0_18px_45px_rgba(6,25,67,0.07)]">
+      <TimeRail time={item.scheduledTime} status={item.status} />
 
-        <div className="text-sm text-gray-700 mt-0.5 flex items-center flex-wrap gap-1.5">
-          {item.boxLabel && (
-            <span className="text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
-              {item.boxLabel}
+      <div className="w-1 shrink-0" style={{ backgroundColor: meta.rail }} />
+
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-5 px-6 py-5">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-black"
+              style={{ borderColor: `${meta.rail}33`, color: meta.rail, backgroundColor: `${meta.rail}10` }}
+            >
+              P
             </span>
-          )}
-          <span>{item.medicineName}</span>
-          <span className="text-gray-300">·</span>
-          <span className="font-medium">{item.dosage}</span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-baseline gap-1.5">
+                <span className="font-black text-[#061943]">{item.patientName}</span>
+                {item.room && (
+                  <span className="text-xs font-semibold text-[#34425f]">
+                    (Room {item.room})
+                  </span>
+                )}
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-base font-black" style={{ color: meta.rail }}>
+                <span>{item.medicineName}</span>
+                <span>-</span>
+                <span>{item.dosage}</span>
+                {item.boxLabel && (
+                  <span className="rounded-md border border-[#dce8f4] bg-[#f7fbff] px-2 py-0.5 text-[11px] font-bold text-[#2563eb]">
+                    {item.boxLabel}
+                  </span>
+                )}
+              </div>
+              {item.administrationMethod && (
+                <p className="mt-2 text-sm font-medium text-[#64748b]">
+                  {item.administrationMethod}
+                </p>
+              )}
+              {item.status === 'skipped' && item.skipReason && (
+                <p className="mt-2 text-xs font-bold text-[#f59e0b]">
+                  Reason: {item.skipReason}
+                </p>
+              )}
+              {showSkip && (
+                <div className="mt-4 flex max-w-md items-center gap-2">
+                  <input
+                    type="text"
+                    value={skipReason}
+                    onChange={e => setSkipReason(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') logDose('SKIPPED', skipReason)
+                    }}
+                    placeholder="Reason (optional)"
+                    autoFocus
+                    className="min-w-0 flex-1 rounded-lg border border-[#d8e3ef] px-3 py-2 text-sm outline-none transition focus:border-[#109b81] focus:ring-2 focus:ring-[#109b81]/15"
+                  />
+                  <button
+                    onClick={() => logDose('SKIPPED', skipReason)}
+                    disabled={acting}
+                    className="rounded-lg bg-[#109b81] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowSkip(false)
+                      setSkipReason('')
+                    }}
+                    className="text-xs font-bold text-[#64748b]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {item.administrationMethod && (
-          <div className="text-xs text-gray-400 mt-0.5 leading-relaxed">
-            {item.administrationMethod}
-          </div>
-        )}
-
-        {item.status === 'skipped' && item.skipReason && (
-          <div className="text-xs text-amber-600 mt-1 font-medium">
-            Reason: {item.skipReason}
-          </div>
-        )}
-
-        {/* Inline skip form */}
-        {showSkip && (
-          <div className="flex items-center gap-2 mt-2.5">
-            <input
-              type="text"
-              value={skipReason}
-              onChange={e => setSkipReason(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') logDose('SKIPPED', skipReason) }}
-              placeholder="Reason (optional)"
-              autoFocus
-              className="flex-1 max-w-xs px-2.5 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <button
-              onClick={() => logDose('SKIPPED', skipReason)}
-              disabled={acting}
-              className="text-xs px-3 py-1.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 font-medium transition-colors"
-            >
-              {acting ? '…' : 'Confirm skip'}
-            </button>
-            <button
-              onClick={() => { setShowSkip(false); setSkipReason('') }}
-              className="text-xs text-gray-400 hover:text-gray-600"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Badge + action buttons */}
-      <div className="flex items-center gap-2 shrink-0 pt-0.5">
-        <StatusBadge status={item.status} />
-
-        {isActionable && !showSkip && !readOnly && (
-          <>
-            <button
-              onClick={() => logDose('GIVEN')}
-              disabled={acting}
-              className="text-xs px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-semibold transition-colors"
-            >
-              {acting ? '…' : 'Mark given'}
-            </button>
-            <button
-              onClick={() => setShowSkip(true)}
-              disabled={acting}
-              className="text-xs px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-50 font-medium transition-colors"
-            >
-              Skip
-            </button>
-          </>
-        )}
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
+          {!isActionable || readOnly ? (
+            <StatusBadge status={item.status} />
+          ) : !showSkip ? (
+            <>
+              <ActionButton
+                label={acting ? 'Saving' : 'Given'}
+                tone="given"
+                onClick={() => logDose('GIVEN')}
+                disabled={acting}
+              />
+              <ActionButton
+                label={acting ? 'Saving' : 'Delayed'}
+                tone="delayed"
+                onClick={() => logDose('DELAYED')}
+                disabled={acting}
+              />
+              <ActionButton
+                label="Skipped"
+                tone="skipped"
+                onClick={() => setShowSkip(true)}
+                disabled={acting}
+              />
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   )
 }
-
-// ─── Grouped dose row (multiple medicines from the same box) ──────────────────
 
 type GroupedProps = {
   items: ScheduleItem[]
@@ -186,10 +294,10 @@ export function GroupedDoseRow({ items, onUpdate, readOnly = false }: GroupedPro
 
   const first = items[0]
   const status = worstStatus(items)
-  const isOverdue = status === 'overdue'
   const isActionable = status === 'pending' || status === 'overdue'
+  const meta = STATUS_META[status]
 
-  async function logAll(logStatus: 'GIVEN' | 'SKIPPED', reason?: string) {
+  async function logAll(logStatus: LogStatus, reason?: string) {
     setActing(true)
     try {
       const results = await Promise.all(
@@ -204,14 +312,16 @@ export function GroupedDoseRow({ items, onUpdate, readOnly = false }: GroupedPro
               status: logStatus,
               skipReason: reason?.trim() || null,
             }),
-          }).then(r => r.ok ? r.json() : null),
+          }).then(r => (r.ok ? r.json() : null)),
         ),
       )
       results.forEach((log, i) => {
         if (log) {
+          const nextStatus =
+            logStatus === 'GIVEN' ? 'given' : logStatus === 'DELAYED' ? 'delayed' : 'skipped'
           onUpdate?.({
             ...items[i],
-            status: logStatus === 'GIVEN' ? 'given' : 'skipped',
+            status: nextStatus,
             logId: log.id,
             skipReason: reason?.trim() || null,
           })
@@ -225,90 +335,106 @@ export function GroupedDoseRow({ items, onUpdate, readOnly = false }: GroupedPro
   }
 
   return (
-    <div
-      className={[
-        'flex items-start gap-4 px-4 py-3 border-b border-gray-100 last:border-0',
-        isOverdue ? 'border-l-4 border-l-red-500 bg-red-50/50' : 'border-l-4 border-l-transparent',
-      ].join(' ')}
-    >
-      <div className="flex-1 min-w-0">
-        {/* Patient name + room */}
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="font-semibold text-gray-900 text-sm">{first.patientName}</span>
-          {first.room && (
-            <span className="text-xs text-gray-400 font-medium">Room {first.room}</span>
-          )}
-        </div>
+    <div className="flex overflow-hidden rounded-2xl border border-[#e7eef7] bg-white shadow-[0_18px_45px_rgba(6,25,67,0.07)]">
+      <TimeRail time={first.scheduledTime} status={status} medicineCount={items.length} />
+      <div className="w-1 shrink-0" style={{ backgroundColor: meta.rail }} />
 
-        {/* Box tag */}
-        {first.boxLabel && (
-          <span className="inline-block mt-1 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
-            {first.boxLabel}
-          </span>
-        )}
-
-        {/* Medicine list */}
-        <div className="mt-1.5 space-y-0.5 pl-1">
-          {items.map(item => (
-            <div key={item.assignmentId} className="text-sm text-gray-700">
-              {item.medicineName}
-              <span className="text-gray-300 mx-1.5">·</span>
-              <span className="font-medium">{item.dosage}</span>
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-5 px-6 py-5">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm font-black"
+              style={{ borderColor: `${meta.rail}33`, color: meta.rail, backgroundColor: `${meta.rail}10` }}
+            >
+              P
+            </span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-baseline gap-1.5">
+                <span className="font-black text-[#061943]">{first.patientName}</span>
+                {first.room && (
+                  <span className="text-xs font-semibold text-[#34425f]">
+                    (Room {first.room})
+                  </span>
+                )}
+              </div>
+              {first.boxLabel && (
+                <span className="mt-2 inline-block rounded-md border border-[#dce8f4] bg-[#f7fbff] px-2 py-0.5 text-[11px] font-bold text-[#2563eb]">
+                  {first.boxLabel}
+                </span>
+              )}
+              <div className="mt-2 space-y-1">
+                {items.map(item => (
+                  <p key={item.assignmentId} className="text-base font-black" style={{ color: meta.rail }}>
+                    {item.medicineName} - {item.dosage}
+                  </p>
+                ))}
+              </div>
+              {first.administrationMethod && (
+                <p className="mt-2 text-sm font-medium text-[#64748b]">
+                  {first.administrationMethod}
+                </p>
+              )}
+              {showSkip && (
+                <div className="mt-4 flex max-w-md items-center gap-2">
+                  <input
+                    type="text"
+                    value={skipReason}
+                    onChange={e => setSkipReason(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') logAll('SKIPPED', skipReason)
+                    }}
+                    placeholder="Reason (optional)"
+                    autoFocus
+                    className="min-w-0 flex-1 rounded-lg border border-[#d8e3ef] px-3 py-2 text-sm outline-none transition focus:border-[#109b81] focus:ring-2 focus:ring-[#109b81]/15"
+                  />
+                  <button
+                    onClick={() => logAll('SKIPPED', skipReason)}
+                    disabled={acting}
+                    className="rounded-lg bg-[#109b81] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowSkip(false)
+                      setSkipReason('')
+                    }}
+                    className="text-xs font-bold text-[#64748b]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* Administration method (from first item — same for whole box) */}
-        {first.administrationMethod && (
-          <div className="text-xs text-gray-400 mt-0.5 pl-1">{first.administrationMethod}</div>
-        )}
-
-        {/* Inline skip form */}
-        {showSkip && (
-          <div className="flex items-center gap-2 mt-2.5">
-            <input
-              type="text"
-              value={skipReason}
-              onChange={e => { setSkipReason(e.target.value) }}
-              onKeyDown={e => { if (e.key === 'Enter') logAll('SKIPPED', skipReason) }}
-              placeholder="Reason (optional)"
-              autoFocus
-              className="flex-1 max-w-xs px-2.5 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <button
-              onClick={() => logAll('SKIPPED', skipReason)}
-              disabled={acting}
-              className="text-xs px-3 py-1.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 font-medium transition-colors"
-            >
-              {acting ? '…' : 'Confirm skip'}
-            </button>
-            <button onClick={() => { setShowSkip(false); setSkipReason('') }}
-              className="text-xs text-gray-400 hover:text-gray-600">Cancel</button>
-          </div>
-        )}
-      </div>
-
-      {/* Badge + actions */}
-      <div className="flex items-center gap-2 shrink-0 pt-0.5">
-        <StatusBadge status={status} />
-        {isActionable && !showSkip && !readOnly && (
-          <>
-            <button
-              onClick={() => logAll('GIVEN')}
-              disabled={acting}
-              className="text-xs px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-semibold transition-colors"
-            >
-              {acting ? '…' : 'Mark given'}
-            </button>
-            <button
-              onClick={() => setShowSkip(true)}
-              disabled={acting}
-              className="text-xs px-3 py-1.5 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-50 font-medium transition-colors"
-            >
-              Skip
-            </button>
-          </>
-        )}
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
+          {!isActionable || readOnly ? (
+            <StatusBadge status={status} />
+          ) : !showSkip ? (
+            <>
+              <ActionButton
+                label={acting ? 'Saving' : 'Given'}
+                tone="given"
+                onClick={() => logAll('GIVEN')}
+                disabled={acting}
+              />
+              <ActionButton
+                label={acting ? 'Saving' : 'Delayed'}
+                tone="delayed"
+                onClick={() => logAll('DELAYED')}
+                disabled={acting}
+              />
+              <ActionButton
+                label="Skipped"
+                tone="skipped"
+                onClick={() => setShowSkip(true)}
+                disabled={acting}
+              />
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   )
